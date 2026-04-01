@@ -1,0 +1,874 @@
+[
+  {
+    "id": 1775059749066,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-01",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775059983384,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-02",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060694197,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-03",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060697121,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-04",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060713494,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-05",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      }
+    ]
+  },
+  {
+    "id": 1775060721672,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-06",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775060725597,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-07",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060728763,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-08",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060730930,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-09",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060733382,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-10",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060736141,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-11",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060739247,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-12",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775060741451,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-13",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060743317,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-14",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060745125,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-15",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060746898,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-16",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060748664,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-17",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060750373,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-18",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060757214,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-19",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      }
+    ]
+  },
+  {
+    "id": 1775060759426,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-20",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775060765834,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-21",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060768049,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-22",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060769882,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-23",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060771610,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-24",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060773825,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-25",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060778302,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-26",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775060781668,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-27",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060783699,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-28",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060785299,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-29",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775060787020,
+    "funcionarioId": 1775059682578,
+    "data": "2026-04-30",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:30",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "13:30",
+        "fim": "18:30"
+      }
+    ]
+  },
+  {
+    "id": 1775061139933,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-01",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061263212,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-02",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061265234,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-03",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061270635,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-04",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775061280468,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-05",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775061302724,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-06",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061305518,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-07",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061307322,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-08",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061309519,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-09",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061311654,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-10",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061318603,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-11",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061325517,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-12",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061329930,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-13",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061331660,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-14",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061333226,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-15",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061334883,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-16",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061336855,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-17",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061344408,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-18",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775061351180,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-19",
+    "tipo": "folga",
+    "turnos": []
+  },
+  {
+    "id": 1775061354733,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-20",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "09:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061356464,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-21",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061358305,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-22",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061360194,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-23",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061362147,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-24",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061367893,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-25",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061373271,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-26",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061375746,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-27",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061377630,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-28",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061383170,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-29",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  },
+  {
+    "id": 1775061391537,
+    "funcionarioId": 1775061089777,
+    "data": "2026-04-30",
+    "tipo": "trabalho",
+    "turnos": [
+      {
+        "inicio": "08:00",
+        "fim": "12:00"
+      },
+      {
+        "inicio": "14:30",
+        "fim": "17:00"
+      }
+    ]
+  }
+]

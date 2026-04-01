@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Pedido de Compra</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181b24;
+    --surface2: #1f2330;
+    --border: #2a2f3d;
+    --accent: #00e5a0;
+    --accent2: #0077ff;
+    --warn: #ff9f43;
+    --danger: #ff4757;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    border-bottom: 1px solid var(--border); padding: 0 32px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+  .logo span { color: var(--text2); font-weight: 400; }
+
+  /* contagem badge in header */
+  #cnt-badge-wrap { display: none; align-items: center; gap: 8px; }
+  .cnt-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,159,67,0.12); border: 1px solid rgba(255,159,67,0.3);
+    color: var(--warn); border-radius: 20px; padding: 5px 14px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+  }
+  .cnt-badge .num { background: var(--warn); color: #000; border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
+
+  /* UPLOAD */
+  #upload-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 56px); gap: 24px; padding: 40px; }
+  .upload-title { font-family: var(--mono); font-size: 28px; font-weight: 600; text-align: center; }
+  .upload-title em { color: var(--accent); font-style: normal; }
+  .upload-sub { color: var(--text2); font-size: 14px; text-align: center; max-width: 400px; line-height: 1.6; }
+  .upload-zone { width: 100%; max-width: 480px; border: 2px dashed var(--border); border-radius: 12px; padding: 48px 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface); }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: rgba(0,229,160,0.04); }
+  .upload-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.7; }
+  .upload-zone p { color: var(--text2); font-size: 13px; }
+  .upload-zone strong { color: var(--accent); }
+  #file-input { display: none; }
+  .btn-upload { margin-top: 12px; background: var(--accent); color: #000; border: none; border-radius: 6px; padding: 10px 24px; font-family: var(--mono); font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* APP */
+  #app-screen { display: none; }
+
+  .toolbar { padding: 14px 32px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .toolbar-group { display: flex; align-items: center; gap: 8px; }
+  .toolbar-label { font-family: var(--mono); font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+  .days-input-wrap { display: flex; align-items: center; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .days-btn { background: none; border: none; color: var(--text2); width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.15s, background 0.15s; }
+  .days-btn:hover { color: var(--accent); background: rgba(0,229,160,0.08); }
+  #days-input { background: none; border: none; color: var(--text); font-family: var(--mono); font-size: 14px; font-weight: 600; width: 48px; text-align: center; outline: none; }
+  #days-input::-webkit-outer-spin-button, #days-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  #days-input[type=number] { -moz-appearance: textfield; }
+  .quick-days { display: flex; gap: 4px; }
+  .qd-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); border-radius: 4px; padding: 4px 8px; font-family: var(--mono); font-size: 11px; cursor: pointer; transition: all 0.15s; }
+  .qd-btn:hover, .qd-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.08); }
+  .toolbar-sep { width: 1px; height: 28px; background: var(--border); margin: 0 4px; }
+  .filter-select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 4px 10px; font-family: var(--sans); font-size: 13px; outline: none; cursor: pointer; height: 32px; }
+  .search-wrap { display: flex; align-items: center; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0 10px; gap: 6px; height: 32px; }
+  .search-wrap svg { color: var(--text2); flex-shrink: 0; }
+  .search-wrap input { background: none; border: none; color: var(--text); font-family: var(--sans); font-size: 13px; width: 160px; outline: none; }
+  .search-wrap input::placeholder { color: var(--text2); }
+  .ml-auto { margin-left: auto; }
+  .btn { background: var(--accent2); color: #fff; border: none; border-radius: 6px; padding: 0 14px; height: 32px; font-family: var(--mono); font-size: 11px; font-weight: 600; cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; transition: opacity 0.2s; white-space: nowrap; }
+  .btn:hover { opacity: 0.85; }
+  .btn.red { background: #e53e3e; }
+  .btn.ghost { background: none; border: 1px solid var(--border); color: var(--text2); }
+  .btn.ghost:hover { border-color: var(--text2); color: var(--text); opacity: 1; }
+
+  .stats-bar { display: flex; gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
+  .stat-card { flex: 1; background: var(--surface); padding: 12px 24px; display: flex; flex-direction: column; gap: 2px; }
+  .stat-label { font-family: var(--mono); font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .stat-value { font-family: var(--mono); font-size: 20px; font-weight: 600; color: var(--text); }
+  .stat-value.green { color: var(--accent); }
+  .stat-value.blue { color: var(--accent2); }
+  .stat-value.orange { color: var(--warn); }
+
+  .table-wrap { overflow-x: auto; padding: 0 32px 80px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { position: sticky; top: 56px; z-index: 10; background: var(--bg); }
+  th { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
+  th:hover { color: var(--text); }
+  th.sorted-asc::after { content: ' ↑'; color: var(--accent); }
+  th.sorted-desc::after { content: ' ↓'; color: var(--accent); }
+  th.right { text-align: right; }
+  th.center { text-align: center; }
+  tbody tr { border-bottom: 1px solid rgba(42,47,61,0.5); transition: background 0.1s; }
+  tbody tr:hover { background: var(--surface); }
+  tbody tr.qty-zero td:not(.act) { opacity: 0.45; }
+  tbody tr.in-cnt { background: rgba(255,159,67,0.03); }
+  td { padding: 9px 12px; vertical-align: middle; }
+  td.mono { font-family: var(--mono); font-size: 12px; }
+  td.right { text-align: right; }
+  td.center { text-align: center; }
+
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 3px; font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .badge-rep { background: rgba(255,159,67,0.15); color: var(--warn); }
+  .badge-ok { background: rgba(0,229,160,0.1); color: var(--accent); }
+
+  .stock-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .stock-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; min-width: 60px; overflow: hidden; }
+  .stock-bar-fill { height: 100%; border-radius: 2px; }
+  .bar-green { background: var(--accent); }
+  .bar-orange { background: var(--warn); }
+  .bar-red { background: var(--danger); }
+
+  .qty-cell { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+  .qty-field { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 13px; font-weight: 600; width: 70px; text-align: right; padding: 4px 8px; border-radius: 4px; outline: none; transition: border-color 0.15s; }
+  .qty-field:focus { border-color: var(--accent); }
+  .qty-field::-webkit-outer-spin-button, .qty-field::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .qty-field[type=number] { -moz-appearance: textfield; }
+  .qty-field.modified { border-color: var(--warn); color: var(--warn); }
+  .qty-reset { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 14px; padding: 2px; opacity: 0; transition: opacity 0.15s; }
+  .qty-cell:hover .qty-reset.vis { opacity: 0.7; }
+  .qty-reset.vis:hover { opacity: 1; color: var(--warn); }
+
+  .btn-cnt {
+    background: none; border: 1px solid var(--border); color: var(--text2);
+    border-radius: 4px; padding: 4px 9px; font-family: var(--mono); font-size: 10px;
+    cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-cnt:hover { border-color: var(--warn); color: var(--warn); background: rgba(255,159,67,0.08); }
+  .btn-cnt.added { border-color: var(--warn); color: var(--warn); background: rgba(255,159,67,0.12); }
+  .btn-cnt.added:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,71,87,0.1); }
+
+  .c-pos { color: var(--accent); }
+  .c-neg { color: var(--danger); }
+  .c-zero { color: var(--text2); }
+
+  /* SELECTED BAR */
+  .sel-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--accent); padding: 12px 32px; display: flex; align-items: center; gap: 12px; transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); z-index: 200; }
+  .sel-bar.vis { transform: translateY(0); }
+  .sel-info { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+  .sel-info strong { color: var(--accent); }
+  .sel-total { font-family: var(--mono); font-size: 14px; font-weight: 600; margin-left: auto; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+  .empty-state p { font-family: var(--mono); font-size: 13px; }
+
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--warn); color: #000; font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 8px 20px; border-radius: 20px; opacity: 0; transition: all 0.25s; pointer-events: none; z-index: 400; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* PRINT */
+  @media print {
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: #fff !important; color: #111 !important; font-family: Arial, sans-serif; }
+    header, .toolbar, .stats-bar, .sel-bar, .toast, #app-screen { display: none !important; }
+
+    .pdf-wrap { display: block !important; }
+
+    .pdf-hdr { display: flex !important; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #111; }
+    .pdf-hdr-l .pdf-title { font-size: 20px; font-weight: 700; font-family: monospace; color: #111; }
+    .pdf-hdr-l .pdf-sub { font-size: 12px; color: #555; margin-top: 4px; }
+    .pdf-hdr-r { font-size: 11px; color: #555; text-align: right; line-height: 1.8; }
+
+    .pdf-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .pdf-tbl th { background: #111 !important; color: #fff !important; padding: 8px 10px; font-family: monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .pdf-tbl th.r { text-align: right; }
+    .pdf-tbl td { padding: 7px 10px; border-bottom: 1px solid #e5e5e5; color: #111; vertical-align: middle; }
+    .pdf-tbl td.r { text-align: right; font-family: monospace; }
+    .pdf-tbl td.m { font-family: monospace; font-size: 10px; color: #555; }
+    .pdf-tbl tbody tr:nth-child(even) td { background: #f8f8f8; }
+    .pdf-tbl tfoot td { border-top: 2px solid #111; font-weight: 700; padding: 9px 10px; font-family: monospace; }
+    .pdf-tbl tfoot td.r { text-align: right; }
+    /* contagem blank field */
+    .cnt-blank { min-height: 22px; border-bottom: 1px solid #bbb !important; }
+    @page { size: A4 portrait; margin: 15mm 12mm; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Pedido<span>/</span>Compra</div>
+  <div id="cnt-badge-wrap">
+    <div class="cnt-badge">
+      <span>📋 Contagem</span>
+      <span class="num" id="cnt-num">0</span>
+    </div>
+    <button class="btn red" id="btn-cnt-pdf" style="height:32px;">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      PDF Contagem
+    </button>
+    <button class="btn ghost" id="btn-cnt-clear" style="height:32px;font-size:10px;">Limpar lista</button>
+  </div>
+  <div style="font-family:var(--mono);font-size:11px;color:var(--text2);" id="header-file">Nenhum arquivo carregado</div>
+</header>
+
+<!-- UPLOAD -->
+<div id="upload-screen">
+  <div class="upload-title">Sistema de <em>Pedido de Compra</em></div>
+  <div class="upload-sub">Carregue seu arquivo XLSX com dados de estoque para calcular automaticamente os pedidos por período.</div>
+  <div class="upload-zone" id="drop-zone">
+    <div class="upload-icon">📦</div>
+    <p>Arraste o arquivo <strong>.xlsx</strong> aqui<br>ou clique para selecionar</p>
+    <button class="btn-upload" onclick="document.getElementById('file-input').click()">Selecionar arquivo</button>
+  </div>
+  <input type="file" id="file-input" accept=".xlsx,.xls">
+  <p style="font-size:12px;color:var(--text2);font-family:var(--mono);">Colunas esperadas: codigo, descricao, estoque, vendas_30d, preco_custo</p>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <span class="toolbar-label">Dias de estoque</span>
+      <div class="days-input-wrap">
+        <button class="days-btn" id="btn-dec">−</button>
+        <input type="number" id="days-input" value="30" min="1" max="365">
+        <button class="days-btn" id="btn-inc">+</button>
+      </div>
+    </div>
+    <div class="quick-days" id="quick-days">
+      <button class="qd-btn" data-days="15">15d</button>
+      <button class="qd-btn active" data-days="30">30d</button>
+      <button class="qd-btn" data-days="45">45d</button>
+      <button class="qd-btn" data-days="60">60d</button>
+      <button class="qd-btn" data-days="90">90d</button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <div class="toolbar-group">
+      <span class="toolbar-label">Status</span>
+      <select class="filter-select" id="filter-status">
+        <option value="all">Todos</option>
+        <option value="Reposicao">Reposição</option>
+        <option value="Normalizado">Normalizado</option>
+        <option value="need">Qtd > 0</option>
+      </select>
+    </div>
+    <div class="toolbar-group">
+      <div class="search-wrap">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search-input" placeholder="Buscar produto...">
+      </div>
+    </div>
+    <div class="ml-auto" style="display:flex;gap:8px;align-items:center;">
+      <label style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2);cursor:pointer;">
+        <input type="checkbox" id="check-all-header"> Sel. todos
+      </label>
+      <button class="btn" id="btn-export-all">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        XLSX
+      </button>
+      <button class="btn red" id="btn-pdf-all">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-label">Total produtos</div><div class="stat-value" id="stat-total">—</div></div>
+    <div class="stat-card"><div class="stat-label">Precisam repor</div><div class="stat-value orange" id="stat-need">—</div></div>
+    <div class="stat-card"><div class="stat-label">Selecionados</div><div class="stat-value blue" id="stat-sel">0</div></div>
+    <div class="stat-card"><div class="stat-label">Valor selecionados</div><div class="stat-value green" id="stat-value">R$ 0,00</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="main-table">
+      <thead>
+        <tr>
+          <th class="center" style="width:40px;"><input type="checkbox" id="check-all-table"></th>
+          <th data-col="codigo">Código</th>
+          <th data-col="descricao">Descrição</th>
+          <th data-col="estoque" class="right">Estoque</th>
+          <th data-col="vendas_30d" class="right">Vendas 30d</th>
+          <th data-col="venda_dia" class="right">Venda/dia</th>
+          <th data-col="estoque_dias" class="right">Dias est.</th>
+          <th data-col="status_reposicao" class="center">Status</th>
+          <th data-col="quantidade_sugerida" class="right">Qtd sugerida</th>
+          <th data-col="quantidade_pedido" class="right">Qtd pedido</th>
+          <th data-col="preco_custo" class="right">Custo unit.</th>
+          <th data-col="total_item" class="right">Total item</th>
+          <th class="center" style="width:116px;">Contagem</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    <div class="empty-state" id="empty-state" style="display:none;"><p>Nenhum produto encontrado.</p></div>
+  </div>
+</div>
+
+<!-- SELECTED BAR -->
+<div class="sel-bar" id="sel-bar">
+  <span class="sel-info"><strong id="sel-count">0</strong> itens selecionados</span>
+  <span class="sel-total" id="sel-total-val">R$ 0,00</span>
+  <button class="btn ghost" id="btn-desel" style="height:36px;">Limpar seleção</button>
+  <button class="btn" id="btn-export-sel" style="height:36px;">⬇ XLSX</button>
+  <button class="btn red" id="btn-pdf-sel" style="height:36px;">⬇ PDF Pedido</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- PDF: PEDIDO (print only) -->
+<div class="pdf-wrap" style="display:none;" id="pdf-pedido-wrap">
+  <div class="pdf-hdr">
+    <div class="pdf-hdr-l">
+      <div class="pdf-title">Pedido de Compra</div>
+      <div class="pdf-sub" id="pdf-pedido-sub"></div>
+    </div>
+    <div class="pdf-hdr-r" id="pdf-pedido-meta"></div>
+  </div>
+  <table class="pdf-tbl">
+    <thead><tr><th style="width:30px;">#</th><th>Ref. Fornecedor</th><th>Descrição</th><th class="r">Qtd Pedido</th><th class="r">Custo Unit.</th><th class="r">Total Item</th></tr></thead>
+    <tbody id="pdf-pedido-body"></tbody>
+    <tfoot><tr><td colspan="3"><strong>TOTAL GERAL</strong></td><td class="r" id="pdf-total-qty"></td><td></td><td class="r" id="pdf-total-val"></td></tr></tfoot>
+  </table>
+</div>
+
+<!-- PDF: CONTAGEM (print only) -->
+<div class="pdf-wrap" style="display:none;" id="pdf-cnt-wrap">
+  <div class="pdf-hdr">
+    <div class="pdf-hdr-l">
+      <div class="pdf-title">Conferência de Estoque</div>
+      <div class="pdf-sub" id="pdf-cnt-sub"></div>
+    </div>
+    <div class="pdf-hdr-r" id="pdf-cnt-meta"></div>
+  </div>
+  <table class="pdf-tbl">
+    <thead><tr><th>Código</th><th>Descrição</th><th class="r" style="width:160px;">Qtd. Contada</th></tr></thead>
+    <tbody id="pdf-cnt-body"></tbody>
+    <tfoot><tr><td colspan="2"><strong>Total de itens</strong></td><td class="r" id="pdf-cnt-total"></td></tr></tfoot>
+  </table>
+</div>
+
+<script>
+let allData = [], filteredData = [];
+let sortCol = 'quantidade_sugerida', sortDir = -1;
+let selectedIds = new Set();
+let modifiedQtys = {};
+let currentDays = 30;
+let contagemSet = new Set();
+const CNT_KEY = 'pedido_cnt_v1';
+
+// ─── CACHE ───
+function loadCnt() {
+  try { contagemSet = new Set(JSON.parse(localStorage.getItem(CNT_KEY) || '[]')); } catch { contagemSet = new Set(); }
+}
+function saveCnt() {
+  try { localStorage.setItem(CNT_KEY, JSON.stringify([...contagemSet])); } catch {}
+}
+function updateCntBadge() {
+  const n = contagemSet.size;
+  document.getElementById('cnt-num').textContent = n;
+  document.getElementById('cnt-badge-wrap').style.display = n > 0 ? 'flex' : 'none';
+}
+
+// ─── UPLOAD ───
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', e => { if (e.target.files[0]) processFile(e.target.files[0]); });
+dropZone.addEventListener('click', () => fileInput.click());
+
+function processFile(file) {
+  document.getElementById('header-file').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const wb = XLSX.read(e.target.result, { type: 'array' });
+    const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: 0 });
+    allData = raw.map((r, i) => ({
+      _id: i,
+      codigo: r.codigo ?? '',
+      ref_fornecedor: r.ref_fornecedor ?? '',
+      descricao: String(r.descricao ?? ''),
+      estoque: parseFloat(r.estoque ?? 0),
+      vendas_30d: parseFloat(r.vendas_30d ?? 0),
+      preco_custo: parseFloat(r.preco_custo ?? 0),
+      status_reposicao: r.status_reposicao ?? '',
+    }));
+    loadCnt();
+    updateCntBadge();
+    document.getElementById('upload-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    recalcAndRender();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ─── CALC & RENDER ───
+function recalcAndRender() {
+  currentDays = parseInt(document.getElementById('days-input').value) || 30;
+  allData.forEach(row => {
+    const vd = row.vendas_30d / 30;
+    row.venda_dia = vd;
+    row.quantidade_sugerida = Math.max(0, Math.ceil(vd * currentDays - row.estoque));
+    row.estoque_dias = vd > 0 ? Math.floor(row.estoque / vd) : (row.estoque > 0 ? 9999 : 0);
+  });
+  applyFiltersAndRender();
+}
+
+function applyFiltersAndRender() {
+  const status = document.getElementById('filter-status').value;
+  const search = document.getElementById('search-input').value.toLowerCase();
+  filteredData = allData.filter(row => {
+    if (status === 'Reposicao' && row.status_reposicao !== 'Reposicao') return false;
+    if (status === 'Normalizado' && row.status_reposicao !== 'Normalizado') return false;
+    if (status === 'need' && (modifiedQtys[row._id] ?? row.quantidade_sugerida) <= 0) return false;
+    if (search && !row.descricao.toLowerCase().includes(search) && !String(row.codigo).includes(search)) return false;
+    return true;
+  });
+  filteredData.sort((a, b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    return av < bv ? sortDir : av > bv ? -sortDir : 0;
+  });
+  renderTable();
+  updateStats();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  document.querySelectorAll('th[data-col]').forEach(th => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+    if (th.dataset.col === sortCol) th.classList.add(sortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+  });
+  if (!filteredData.length) { tbody.innerHTML = ''; document.getElementById('empty-state').style.display = 'block'; return; }
+  document.getElementById('empty-state').style.display = 'none';
+
+  tbody.innerHTML = filteredData.map(row => {
+    const qty = modifiedQtys[row._id] ?? row.quantidade_sugerida;
+    const modified = modifiedQtys[row._id] !== undefined && modifiedQtys[row._id] !== row.quantidade_sugerida;
+    const total = qty * row.preco_custo;
+    const sel = selectedIds.has(row._id);
+    const inCnt = contagemSet.has(row._id);
+    const pct = Math.min(100, (row.estoque_dias / (currentDays * 2)) * 100);
+    const barCls = row.estoque_dias >= currentDays ? 'bar-green' : row.estoque_dias >= currentDays * 0.5 ? 'bar-orange' : 'bar-red';
+    const totalCls = total > 0 ? 'c-pos' : total < 0 ? 'c-neg' : 'c-zero';
+
+    return `<tr class="${qty <= 0 ? 'qty-zero' : ''} ${inCnt ? 'in-cnt' : ''}" data-id="${row._id}">
+      <td class="center"><input type="checkbox" class="row-check" data-id="${row._id}" ${sel ? 'checked' : ''}></td>
+      <td class="mono" style="color:var(--text2);font-size:12px;">${row.codigo}</td>
+      <td title="${row.descricao}" style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${row.descricao}</td>
+      <td class="right mono">${fmtNum(row.estoque)}</td>
+      <td class="right mono">${fmtNum(row.vendas_30d)}</td>
+      <td class="right mono">${row.venda_dia.toFixed(2)}</td>
+      <td class="right">
+        <div class="stock-bar-wrap" style="justify-content:flex-end;">
+          <div class="stock-bar" style="max-width:70px;"><div class="stock-bar-fill ${barCls}" style="width:${pct}%"></div></div>
+          <span class="mono" style="min-width:32px;text-align:right;font-size:12px;">${row.estoque_dias === 9999 ? '∞' : row.estoque_dias}</span>
+        </div>
+      </td>
+      <td class="center"><span class="badge ${row.status_reposicao === 'Reposicao' ? 'badge-rep' : 'badge-ok'}">${row.status_reposicao === 'Reposicao' ? 'Reposição' : 'OK'}</span></td>
+      <td class="right mono" style="color:var(--text2);">${fmtNum(row.quantidade_sugerida)}</td>
+      <td class="right">
+        <div class="qty-cell">
+          <input type="number" class="qty-field ${modified ? 'modified' : ''}" data-id="${row._id}" value="${qty}" min="0">
+          <button class="qty-reset ${modified ? 'vis' : ''}" data-id="${row._id}">↺</button>
+        </div>
+      </td>
+      <td class="right mono">R$ ${fmtBR(row.preco_custo)}</td>
+      <td class="right mono ${totalCls}">R$ ${fmtBR(total)}</td>
+      <td class="center act">
+        <button class="btn-cnt ${inCnt ? 'added' : ''}" data-id="${row._id}">
+          ${inCnt ? '✓ Adicionado' : '+ Contagem'}
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.qty-field').forEach(inp => inp.addEventListener('change', e => {
+    const id = parseInt(e.target.dataset.id);
+    const val = parseFloat(e.target.value) || 0;
+    const row = allData.find(r => r._id === id);
+    if (val === row.quantidade_sugerida) delete modifiedQtys[id]; else modifiedQtys[id] = val;
+    applyFiltersAndRender();
+  }));
+  tbody.querySelectorAll('.qty-reset').forEach(btn => btn.addEventListener('click', e => {
+    delete modifiedQtys[parseInt(e.target.dataset.id)]; applyFiltersAndRender();
+  }));
+  tbody.querySelectorAll('.row-check').forEach(cb => cb.addEventListener('change', e => {
+    const id = parseInt(e.target.dataset.id);
+    if (e.target.checked) selectedIds.add(id); else selectedIds.delete(id);
+    updateStats(); updateSelBar(); updateCheckAll();
+  }));
+
+  // toggle contagem
+  tbody.querySelectorAll('.btn-cnt').forEach(btn => btn.addEventListener('click', e => {
+    const id = parseInt(e.target.dataset.id);
+    const row = allData.find(r => r._id === id);
+    if (contagemSet.has(id)) {
+      contagemSet.delete(id);
+      showToast('Removido da contagem');
+    } else {
+      contagemSet.add(id);
+      showToast('✓ Adicionado à contagem');
+    }
+    saveCnt(); updateCntBadge(); applyFiltersAndRender();
+  }));
+}
+
+// ─── STATS ───
+function updateStats() {
+  document.getElementById('stat-total').textContent = allData.length.toLocaleString('pt-BR');
+  document.getElementById('stat-need').textContent = allData.filter(r => (modifiedQtys[r._id] ?? r.quantidade_sugerida) > 0).length.toLocaleString('pt-BR');
+  document.getElementById('stat-sel').textContent = selectedIds.size.toLocaleString('pt-BR');
+  let tv = 0;
+  selectedIds.forEach(id => { const r = allData.find(x => x._id === id); if (r) tv += (modifiedQtys[id] ?? r.quantidade_sugerida) * r.preco_custo; });
+  document.getElementById('stat-value').textContent = 'R$ ' + fmtBR(tv);
+}
+function updateSelBar() {
+  const n = selectedIds.size;
+  document.getElementById('sel-count').textContent = n;
+  let tv = 0;
+  selectedIds.forEach(id => { const r = allData.find(x => x._id === id); if (r) tv += (modifiedQtys[id] ?? r.quantidade_sugerida) * r.preco_custo; });
+  document.getElementById('sel-total-val').textContent = 'R$ ' + fmtBR(tv);
+  document.getElementById('sel-bar').classList.toggle('vis', n > 0);
+}
+function updateCheckAll() {
+  const all = filteredData.length > 0 && filteredData.every(r => selectedIds.has(r._id));
+  ['check-all-table','check-all-header'].forEach(id => document.getElementById(id).checked = all);
+}
+
+// ─── SORT ───
+document.getElementById('main-table').addEventListener('click', e => {
+  const th = e.target.closest('th[data-col]'); if (!th) return;
+  if (sortCol === th.dataset.col) sortDir *= -1; else { sortCol = th.dataset.col; sortDir = -1; }
+  applyFiltersAndRender();
+});
+
+// ─── DAYS ───
+document.getElementById('btn-dec').addEventListener('click', () => { const v = Math.max(1, parseInt(document.getElementById('days-input').value) - 1); document.getElementById('days-input').value = v; updateQD(v); recalcAndRender(); });
+document.getElementById('btn-inc').addEventListener('click', () => { const v = parseInt(document.getElementById('days-input').value) + 1; document.getElementById('days-input').value = v; updateQD(v); recalcAndRender(); });
+document.getElementById('days-input').addEventListener('change', () => { updateQD(parseInt(document.getElementById('days-input').value)); recalcAndRender(); });
+document.getElementById('quick-days').addEventListener('click', e => { const b = e.target.closest('.qd-btn'); if (!b) return; const d = parseInt(b.dataset.days); document.getElementById('days-input').value = d; updateQD(d); recalcAndRender(); });
+function updateQD(d) { document.querySelectorAll('.qd-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.days) === d)); }
+
+document.getElementById('filter-status').addEventListener('change', applyFiltersAndRender);
+document.getElementById('search-input').addEventListener('input', applyFiltersAndRender);
+
+// ─── SELECT ALL ───
+['check-all-table','check-all-header'].forEach(id => {
+  document.getElementById(id).addEventListener('change', e => {
+    filteredData.forEach(r => { if (e.target.checked) selectedIds.add(r._id); else selectedIds.delete(r._id); });
+    applyFiltersAndRender(); updateSelBar(); updateCheckAll();
+  });
+});
+document.getElementById('btn-desel').addEventListener('click', () => { selectedIds.clear(); applyFiltersAndRender(); updateSelBar(); });
+
+// ─── CONTAGEM CONTROLS ───
+document.getElementById('btn-cnt-clear').addEventListener('click', () => {
+  if (!confirm('Limpar toda a lista de contagem?')) return;
+  contagemSet.clear(); saveCnt(); updateCntBadge(); applyFiltersAndRender();
+});
+
+// ─── XLSX ───
+function exportXLSX(rows, fname) {
+  if (!rows.length) return;
+  const data = rows.map(r => {
+    const qty = modifiedQtys[r._id] ?? r.quantidade_sugerida;
+    return { 'Código': r.codigo, 'Ref. Fornecedor': r.ref_fornecedor, 'Descrição': r.descricao, 'Estoque': r.estoque, 'Vendas 30d': r.vendas_30d, 'Qtd Sugerida': r.quantidade_sugerida, 'Qtd Pedido': qty, 'Custo Unit.': r.preco_custo, 'Total (R$)': +(qty * r.preco_custo).toFixed(2) };
+  });
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Pedido');
+  XLSX.writeFile(wb, fname);
+}
+document.getElementById('btn-export-all').addEventListener('click', () => exportXLSX(filteredData, `pedido_${currentDays}d_${today()}.xlsx`));
+document.getElementById('btn-export-sel').addEventListener('click', () => exportXLSX(allData.filter(r => selectedIds.has(r._id)), `pedido_sel_${today()}.xlsx`));
+
+// ─── PDF PEDIDO ───
+function printPedido(rows, label) {
+  const tq = rows.reduce((s, r) => s + (modifiedQtys[r._id] ?? r.quantidade_sugerida), 0);
+  const tv = rows.reduce((s, r) => s + (modifiedQtys[r._id] ?? r.quantidade_sugerida) * r.preco_custo, 0);
+  document.getElementById('pdf-pedido-sub').textContent = `${label} · ${currentDays} dias de estoque`;
+  document.getElementById('pdf-pedido-meta').innerHTML = `Data: ${new Date().toLocaleDateString('pt-BR')}<br>Itens: ${rows.length}<br>Total: R$ ${fmtBR(tv)}`;
+  document.getElementById('pdf-pedido-body').innerHTML = rows.map((r, i) => {
+    const qty = modifiedQtys[r._id] ?? r.quantidade_sugerida;
+    return `<tr><td class="m">${i+1}</td><td class="m">${r.ref_fornecedor}</td><td>${r.descricao}</td><td class="r">${fmtNum(qty)}</td><td class="r">R$ ${fmtBR(r.preco_custo)}</td><td class="r"><strong>R$ ${fmtBR(qty * r.preco_custo)}</strong></td></tr>`;
+  }).join('');
+  document.getElementById('pdf-total-qty').textContent = fmtNum(tq);
+  document.getElementById('pdf-total-val').innerHTML = `<strong>R$ ${fmtBR(tv)}</strong>`;
+  document.getElementById('pdf-pedido-wrap').style.display = 'block';
+  document.getElementById('pdf-cnt-wrap').style.display = 'none';
+  window.print();
+  document.getElementById('pdf-pedido-wrap').style.display = 'none';
+}
+document.getElementById('btn-pdf-all').addEventListener('click', () => printPedido(filteredData, 'Itens filtrados'));
+document.getElementById('btn-pdf-sel').addEventListener('click', () => {
+  const rows = allData.filter(r => selectedIds.has(r._id));
+  if (!rows.length) return; printPedido(rows, 'Itens selecionados');
+});
+
+// ─── PDF CONTAGEM ───
+document.getElementById('btn-cnt-pdf').addEventListener('click', () => {
+  const rows = allData.filter(r => contagemSet.has(r._id));
+  if (!rows.length) { showToast('Nenhum item na lista'); return; }
+  document.getElementById('pdf-cnt-sub').textContent = `${rows.length} produto${rows.length !== 1 ? 's' : ''} para conferência`;
+  document.getElementById('pdf-cnt-meta').innerHTML = `Data: ${new Date().toLocaleDateString('pt-BR')}<br>Responsável: ____________________`;
+  document.getElementById('pdf-cnt-body').innerHTML = rows.map(r =>
+    `<tr><td class="m">${r.codigo}</td><td>${r.descricao}</td><td class="cnt-blank r"></td></tr>`
+  ).join('');
+  document.getElementById('pdf-cnt-total').textContent = rows.length;
+  document.getElementById('pdf-cnt-wrap').style.display = 'block';
+  document.getElementById('pdf-pedido-wrap').style.display = 'none';
+  window.print();
+  document.getElementById('pdf-cnt-wrap').style.display = 'none';
+});
+
+// ─── TOAST ───
+let _tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ─── HELPERS ───
+function fmtNum(n) { return Number(n).toLocaleString('pt-BR'); }
+function fmtBR(n) { return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function today() { return new Date().toISOString().slice(0, 10); }
+</script>
+</body>
+</html>
