@@ -1,0 +1,18 @@
+# Dependencias
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Build do frontend
+frontend/dist/
+
+# Dados locais (gerados em runtime)
+backend/data/
+logs/
+
+# Variaveis de ambiente
+backend/.env
+
+# Sistema
+.DS_Store
+Thumbs.db
