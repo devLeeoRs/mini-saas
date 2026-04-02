@@ -14,6 +14,7 @@
   --mono: 'IBM Plex Mono', monospace;
   --sans: 'IBM Plex Sans', sans-serif;
   --header-h: 56px;
+  --bottom-nav-h: 0px;
   --radius: 6px;
 }
 
@@ -57,6 +58,53 @@ main {
   position: relative;
   z-index: 50;
 }
+
+/* ─── BOTTOM NAV (MOBILE) ─────────────────────── */
+.bottom-nav {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(24, 27, 36, 0.92);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 150;
+}
+
+.bottom-nav-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 6px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text2);
+  transition: background 0.12s, color 0.12s;
+}
+
+.bottom-nav-btn span {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bottom-nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.bottom-nav-btn.active { color: var(--accent); background: rgba(0,229,160,0.08); }
 
 .logo {
   font-family: var(--mono);
@@ -564,7 +612,11 @@ main {
 .cal-day-badge--feriado  { background: rgba(255,71,87,0.15); color: #ff4757; }
 
 /* Grid do calendário */
-.cal-grid { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
+.cal-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px calc(16px + var(--bottom-nav-h) + env(safe-area-inset-bottom));
+}
 
 .cal-dow-row {
   display: grid;
@@ -992,7 +1044,9 @@ main {
 }
 
 /* padding extra no final para não cobrir com a SelectionBar fixa */
-.products-table tbody tr:last-child td { padding-bottom: 70px; }
+.products-table tbody tr:last-child td {
+  padding-bottom: calc(70px + var(--bottom-nav-h) + env(safe-area-inset-bottom));
+}
 
 .products-table tbody tr { transition: background 0.1s; }
 .products-table tbody tr:hover { background: rgba(255,255,255,0.02); }
@@ -1291,7 +1345,7 @@ main {
   .cal-main         { min-height: 0; flex: 1; }
   .cal-nav          { padding: 10px 12px; }
   .cal-resumo       { padding: 8px 12px; }
-  .cal-grid         { padding: 0 6px 12px; }
+  .cal-grid         { padding: 0 6px calc(12px + var(--bottom-nav-h) + env(safe-area-inset-bottom)); }
   .cal-cell         { min-height: 60px; padding: 4px 5px; }
   .cal-cell-num     { font-size: 11px; }
   .cal-cell-tipo    { display: none; }
@@ -1340,6 +1394,7 @@ main {
   body { background: #fff !important; color: #111 !important; font-family: Arial, sans-serif; }
 
   .header,
+  .bottom-nav,
   main,
   .upload-screen,
   .selection-bar,
@@ -1535,6 +1590,19 @@ main {
 
 /* ─── RESPONSIVE — MOBILE ≤ 768px ───────────────────────────────────────── */
 @media (max-width: 768px) {
+  :root { --bottom-nav-h: 64px; }
+
+  .bottom-nav { display: flex; }
+
+  /* No mobile, usa apenas a bottom-nav */
+  .header-nav { display: none !important; }
+
+  /* Mantém SelectionBar acima da bottom nav */
+  .selection-bar { bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom)); }
+
+  /* Toast não fica atrás da bottom nav */
+  .toast { bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 12px); }
+
   /* Hamburger visible */
   .hamburger { display: flex; }
   .mobile-overlay { display: block; }
@@ -1569,7 +1637,7 @@ main {
   .selection-bar { padding: 8px 12px; gap: 8px; }
 
   /* Upload screen */
-  .upload-screen { padding: 20px 12px; gap: 16px; }
+  .upload-screen { padding: 20px 12px; padding-bottom: calc(20px + var(--bottom-nav-h) + env(safe-area-inset-bottom)); gap: 16px; }
   .upload-title { font-size: 20px; }
   .drop-zone { padding: 32px 16px; }
   .pg-import-box { padding: 16px; }
@@ -1587,7 +1655,7 @@ main {
   .cal-nav-mes { font-size: 15px; }
   .cal-resumo { padding: 10px 12px; }
   .cal-resumo-stats { gap: 10px; }
-  .cal-grid { padding: 0 8px 8px; }
+  .cal-grid { padding: 0 8px calc(8px + var(--bottom-nav-h) + env(safe-area-inset-bottom)); }
   .cal-cell { min-height: 60px; padding: 4px 5px; }
   .cal-cell-num { font-size: 11px; }
   .cal-cell-horas { font-size: 10px; }
