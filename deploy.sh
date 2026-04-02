@@ -27,7 +27,7 @@ docker compose up -d
 echo ""
 echo "============================================================"
 echo "  Deploy concluído!"
-echo "  App: https://app.ferragemoliveira.com.br"
+echo "  App: https://api.ferragemoliveira.com.br"
 echo "  Logs: docker compose logs -f ferragem"
 echo "============================================================"
 echo ""

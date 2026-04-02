@@ -13,14 +13,14 @@ services:
     labels:
       - "traefik.enable=true"
       # ── HTTPS ──────────────────────────────────────────────────────────────
-      - "traefik.http.routers.ferragem.rule=Host(`app.ferragemoliveira.com.br`)"
+      - "traefik.http.routers.ferragem.rule=Host(`api.ferragemoliveira.com.br`)"
       - "traefik.http.routers.ferragem.entrypoints=websecure"
       # ATENÇÃO: verifique o nome do certresolver no docker-compose do n8n
       # (geralmente "letsencrypt" ou "myresolver")
       - "traefik.http.routers.ferragem.tls.certresolver=letsencrypt"
       - "traefik.http.services.ferragem.loadbalancer.server.port=3001"
       # ── HTTP → HTTPS redirect ───────────────────────────────────────────────
-      - "traefik.http.routers.ferragem-http.rule=Host(`app.ferragemoliveira.com.br`)"
+      - "traefik.http.routers.ferragem-http.rule=Host(`api.ferragemoliveira.com.br`)"
       - "traefik.http.routers.ferragem-http.entrypoints=web"
       - "traefik.http.routers.ferragem-http.middlewares=ferragem-https"
       - "traefik.http.middlewares.ferragem-https.redirectscheme.scheme=https"
