@@ -3,13 +3,13 @@ services:
     build: .
     container_name: ferragem_app
     restart: unless-stopped
-    env_file: .env
+    env_file: backend/.env
     volumes:
       # Persiste os dados JSON entre deploys
       - ./backend/data:/app/backend/data
     networks:
       - n8n_default        # Rede do Traefik (para roteamento HTTP/HTTPS)
-      - postgres_net       # Rede do PostgreSQL
+      # - postgres_net       # Rede do PostgreSQL
     labels:
       - "traefik.enable=true"
       # ── HTTPS ──────────────────────────────────────────────────────────────
@@ -29,6 +29,3 @@ services:
 networks:
   n8n_default:
     external: true
-  postgres_net:
-    external: true
-    name: postgres-docker_postgres_net
