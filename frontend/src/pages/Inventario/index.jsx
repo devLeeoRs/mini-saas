@@ -63,10 +63,16 @@ export default function InventarioPage() {
   const [toast, setToast]         = useState(null);
   const [printMode, setPrintMode] = useState(false);
   const [loadingBusca, setLoadingBusca] = useState(false);
+  const [scanOpen, setScanOpen] = useState(false);
+  const [scanStatus, setScanStatus] = useState('');
 
   const buscaRef    = useRef(null);
   const qtdRef      = useRef(null);
   const toastTimer  = useRef(null);
+
+  const scanVideoRef = useRef(null);
+  const scanControlsRef = useRef(null);
+  const lastScanRef = useRef({ text: '', at: 0 });
 
   // ── Load inventories ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -81,10 +87,26 @@ export default function InventarioPage() {
 
   // ── Auto-focus busca ───────────────────────────────────────────────────────
   useEffect(() => {
-    if (!showModal && !printMode) {
+    if (!showModal && !printMode && !scanOpen) {
       setTimeout(() => buscaRef.current?.focus(), 120);
     }
-  }, [showModal, inventarioAtual, printMode]);
+  }, [showModal, inventarioAtual, printMode, scanOpen]);
+
+  const normalizeDigits = (s) => String(s || '').replace(/\D+/g, '');
+
+  const isValidEAN13 = (raw) => {
+    const digits = normalizeDigits(raw);
+    if (digits.length !== 13) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 12; i++) {
+      const n = digits.charCodeAt(i) - 48;
+      if (n < 0 || n > 9) return false;
+      sum += (i % 2 === 0) ? n : n * 3;
+    }
+    const check = (10 - (sum % 10)) % 10;
+    return check === (digits.charCodeAt(12) - 48);
+  };
 
   // ── Toast ──────────────────────────────────────────────────────────────────
   const showToast = useCallback((msg, type = 'success') => {
@@ -170,6 +192,91 @@ export default function InventarioPage() {
       setLoadingBusca(false);
     }
   }, [inventarioAtual, showToast]);
+
+  // ── Barcode scanner (mobile only) ─────────────────────────────────────────
+  const stopScanner = useCallback(() => {
+    try { scanControlsRef.current?.stop?.(); } catch {}
+    scanControlsRef.current = null;
+    setScanStatus('');
+  }, []);
+
+  const startScanner = useCallback(async () => {
+    if (!scanVideoRef.current) return;
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      showToast('Leitor indisponível neste dispositivo', 'error');
+      setScanOpen(false);
+      return;
+    }
+
+    setScanStatus('Abrindo câmera...');
+
+    // Carrega ZXing sob demanda (usado apenas no mobile)
+    const [{ BrowserMultiFormatReader }, { BarcodeFormat, DecodeHintType }] = await Promise.all([
+      import('@zxing/browser'),
+      import('@zxing/library'),
+    ]);
+
+    const hints = new Map();
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]);
+    hints.set(DecodeHintType.TRY_HARDER, true);
+
+    const reader = new BrowserMultiFormatReader(hints, {
+      delayBetweenScanAttempts: 80,
+      delayBetweenScanSuccess: 500,
+    });
+
+    try {
+      const controls = await reader.decodeFromConstraints(
+        {
+          audio: false,
+          video: {
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        },
+        scanVideoRef.current,
+        (result, error, controlsArg) => {
+          const text = result?.getText?.() ?? result?.text;
+          const digits = normalizeDigits(text);
+          if (!digits) return;
+
+          const now = Date.now();
+          if (lastScanRef.current.text === digits && (now - lastScanRef.current.at) < 1200) return;
+          lastScanRef.current = { text: digits, at: now };
+
+          if (!isValidEAN13(digits)) {
+            setScanStatus('Aproxime um EAN-13 válido...');
+            return;
+          }
+
+          try { (controlsArg || controls)?.stop?.(); } catch {}
+          scanControlsRef.current = null;
+
+          setScanOpen(false);
+          setBusca(digits);
+          buscarProduto(digits);
+        }
+      );
+
+      scanControlsRef.current = controls;
+      setScanStatus('Aponte para o código EAN-13');
+    } catch {
+      showToast('Não foi possível abrir a câmera', 'error');
+      setScanOpen(false);
+    }
+  }, [buscarProduto, showToast]);
+
+  useEffect(() => {
+    if (!scanOpen) {
+      stopScanner();
+      return;
+    }
+
+    startScanner();
+    return () => stopScanner();
+  }, [scanOpen, startScanner, stopScanner]);
 
   const handleBuscaKeyDown = (e) => {
     if (e.key !== 'Enter') return;
@@ -321,8 +428,50 @@ export default function InventarioPage() {
                 inputMode="text"
                 disabled={loadingBusca}
               />
+              <button
+                type="button"
+                className="inv-scan-btn"
+                onClick={() => setScanOpen(true)}
+                disabled={loadingBusca}
+                aria-label="Ler código de barras"
+                title="Ler código de barras"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 7V5a2 2 0 0 1 2-2h2" />
+                  <path d="M20 7V5a2 2 0 0 0-2-2h-2" />
+                  <path d="M4 17v2a2 2 0 0 0 2 2h2" />
+                  <path d="M20 17v2a2 2 0 0 1-2 2h-2" />
+                  <path d="M7 9v6" />
+                  <path d="M10 9v6" />
+                  <path d="M14 9v6" />
+                  <path d="M17 9v6" />
+                </svg>
+              </button>
             </div>
           </div>
+
+          {/* Barcode scanner (mobile) */}
+          {scanOpen && (
+            <div className="inv-scan-overlay" onClick={() => setScanOpen(false)}>
+              <div className="inv-scan-sheet" onClick={(e) => e.stopPropagation()}>
+                <div className="inv-scan-top">
+                  <div className="inv-scan-title">Leitor EAN-13</div>
+                  <button className="inv-scan-close" onClick={() => setScanOpen(false)} aria-label="Fechar">
+                    Fechar
+                  </button>
+                </div>
+
+                <div className="inv-scan-video-wrap">
+                  <video ref={scanVideoRef} className="inv-scan-video" muted playsInline autoPlay />
+                  <div className="inv-scan-frame" />
+                </div>
+
+                <div className="inv-scan-help">
+                  {scanStatus || 'Aponte para o código'}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Product card */}
           {produto ? (

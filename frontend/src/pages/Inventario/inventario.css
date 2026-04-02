@@ -160,6 +160,117 @@
   flex: 1;
 }
 
+/* Botão de câmera (apenas mobile) */
+.inv-scan-btn {
+  display: none;
+  width: 52px;
+  border-radius: var(--radius);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, transform 0.05s;
+}
+
+.inv-scan-btn:active { transform: translateY(1px); }
+.inv-scan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+  .inv-scan-btn { display: inline-flex; }
+}
+
+/* Scanner overlay */
+.inv-scan-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+}
+
+.inv-scan-sheet {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.inv-scan-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.inv-scan-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+
+.inv-scan-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.inv-scan-video-wrap {
+  position: relative;
+  background: #000;
+}
+
+.inv-scan-video {
+  width: 100%;
+  height: 58vh;
+  max-height: 520px;
+  object-fit: cover;
+  display: block;
+}
+
+.inv-scan-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.inv-scan-frame:before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(80%, 340px);
+  height: 110px;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(0,229,160,0.55);
+  border-radius: 12px;
+  box-shadow: 0 0 0 999px rgba(0,0,0,0.15);
+}
+
+.inv-scan-help {
+  padding: 12px 14px;
+  color: var(--text2);
+  font-size: 13px;
+}
+
 .inv-btn-buscar {
   flex-shrink: 0;
   padding: 0 20px;
