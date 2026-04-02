@@ -54,6 +54,8 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  position: relative;
+  z-index: 50;
 }
 
 .logo {
@@ -1342,4 +1344,162 @@ main {
   .cnt-blank { min-height: 22px; border-bottom: 1px solid #bbb !important; }
 
   @page { size: A4 portrait; margin: 15mm 12mm; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* ─── HAMBURGER BUTTON ──────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.25s ease;
+}
+.hamburger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger--open span:nth-child(2) { opacity: 0; }
+.hamburger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ─── MOBILE OVERLAY & DRAWER ───────────────────────────────────────────── */
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+}
+.mobile-drawer {
+  display: none;
+  position: fixed;
+  top: var(--header-h);
+  right: -280px;
+  width: 280px;
+  bottom: 0;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  z-index: 100;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+  overflow-y: auto;
+  transition: right 0.3s ease;
+}
+.mobile-drawer--open { right: 0; }
+.mobile-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mobile-drawer-nav .header-nav-btn {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 15px;
+  border-radius: var(--radius);
+}
+.mobile-drawer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── RESPONSIVE — MOBILE ≤ 768px ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Hamburger visible */
+  .hamburger { display: flex; }
+  .mobile-overlay { display: block; }
+  .mobile-drawer { display: flex; }
+
+  /* Hide desktop nav & some header actions */
+  .header-nav--desktop { display: none !important; }
+  .header-hide-mobile { display: none !important; }
+
+  /* Header */
+  .header { padding: 0 12px; gap: 8px; }
+  .logo { font-size: 12px; }
+
+  /* Toolbar */
+  .toolbar { padding: 8px 12px; gap: 8px; }
+  .toolbar-sep { display: none; }
+  .quick-days { flex-wrap: wrap; }
+  .filter-tabs { flex-wrap: wrap; }
+  .search-input { width: 100px; }
+
+  /* Stats bar */
+  .stats-bar { flex-wrap: wrap; }
+  .stat-card { padding: 8px 12px; min-width: 50%; }
+  .stat-value { font-size: 16px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .products-table { min-width: 700px; }
+  .cell-desc { max-width: 160px; }
+
+  /* Selection bar */
+  .selection-bar { padding: 8px 12px; gap: 8px; }
+
+  /* Upload screen */
+  .upload-screen { padding: 20px 12px; gap: 16px; }
+  .upload-title { font-size: 20px; }
+  .drop-zone { padding: 32px 16px; }
+  .pg-import-box { padding: 16px; }
+  .pg-filters { grid-template-columns: 1fr; }
+
+  /* Calendar / Horários */
+  .cal-page { flex-direction: column; }
+  .cal-sidebar {
+    width: 100%;
+    max-height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .cal-nav { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+  .cal-nav-mes { font-size: 15px; }
+  .cal-resumo { padding: 10px 12px; }
+  .cal-resumo-stats { gap: 10px; }
+  .cal-grid { padding: 0 8px 8px; }
+  .cal-cell { min-height: 60px; padding: 4px 5px; }
+  .cal-cell-num { font-size: 11px; }
+  .cal-cell-horas { font-size: 10px; }
+  .cal-cell-turnos span { font-size: 9px; }
+
+  /* Modais */
+  .cal-overlay { padding: 10px; }
+  .cal-modal { max-width: 100%; }
+
+  /* Inventário */
+  .inv-topbar { flex-wrap: wrap; gap: 8px; padding: 10px 12px; }
+  .inv-content { padding: 12px; }
+  .inv-stock-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Toast */
+  .toast { font-size: 11px; padding: 7px 14px; max-width: 90vw; white-space: normal; text-align: center; }
+}
+
+/* ─── RESPONSIVE — SMALL MOBILE ≤ 480px ─────────────────────────────────── */
+@media (max-width: 480px) {
+  .stat-card { min-width: 100%; }
+  .products-table { min-width: 600px; }
+  .cal-week, .cal-dow-row { gap: 2px; }
+  .cal-cell { min-height: 48px; }
+  .inv-stock-grid { grid-template-columns: 1fr; }
+  .inv-actions { grid-template-columns: 1fr; }
+  .cnt-badge { padding: 4px 10px; font-size: 10px; }
 }
