@@ -1,8 +1,33 @@
+import { useState, useEffect } from 'react';
+
 export default function Header({
   page, onPageChange,
   contagemCount, onClearContagem, onPrintContagem,
   hasData, onNewUpload,
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Fecha menu ao trocar de página
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [page]);
+
+  // Fecha menu ao redimensionar para desktop
+  useEffect(() => {
+    const onResize = () => { if (window.innerWidth > 768) setMenuOpen(false); };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const navBtn = (key, label) => (
+    <button
+      className={`header-nav-btn${page === key ? ' header-nav-btn--active' : ''}`}
+      onClick={() => { onPageChange(key); setMenuOpen(false); }}
+    >
+      {label}
+    </button>
+  );
+
   return (
     <header className="header">
       <div className="header-top">
@@ -41,24 +66,9 @@ export default function Header({
 
       {/* Navegação entre módulos */}
       <nav className="header-nav">
-        <button
-          className={`header-nav-btn${page === 'pedido' ? ' header-nav-btn--active' : ''}`}
-          onClick={() => onPageChange('pedido')}
-        >
-          Pedido
-        </button>
-        <button
-          className={`header-nav-btn${page === 'horarios' ? ' header-nav-btn--active' : ''}`}
-          onClick={() => onPageChange('horarios')}
-        >
-          Horários
-        </button>
-        <button
-          className={`header-nav-btn${page === 'inventario' ? ' header-nav-btn--active' : ''}`}
-          onClick={() => onPageChange('inventario')}
-        >
-          Inventário
-        </button>
+        {navBtn('pedido', 'Pedido')}
+        {navBtn('horarios', 'Horários')}
+        {navBtn('inventario', 'Inventário')}
       </nav>
     </header>
   );

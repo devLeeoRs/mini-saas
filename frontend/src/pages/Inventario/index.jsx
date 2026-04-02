@@ -172,7 +172,10 @@ export default function InventarioPage() {
   }, [inventarioAtual, showToast]);
 
   const handleBuscaKeyDown = (e) => {
-    if (e.key === 'Enter') buscarProduto(busca);
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    // Prefer the input value to avoid state lag with fast scanners
+    buscarProduto(e.currentTarget.value);
   };
 
   // ── Realizar contagem ──────────────────────────────────────────────────────
@@ -318,13 +321,6 @@ export default function InventarioPage() {
                 inputMode="text"
                 disabled={loadingBusca}
               />
-              <button
-                className="btn inv-btn-buscar"
-                onClick={() => buscarProduto(busca)}
-                disabled={loadingBusca || !busca.trim()}
-              >
-                Buscar
-              </button>
             </div>
           </div>
 
