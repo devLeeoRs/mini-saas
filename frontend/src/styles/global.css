@@ -1208,6 +1208,119 @@ main {
 .cal-nav-right { display: flex; align-items: center; justify-content: flex-end; flex: 1; gap: 8px; }
 .cal-nav-right .cal-btn { display: flex; align-items: center; gap: 5px; }
 
+/* ═══════════════════════════════════════════════
+   RESPONSIVO
+   ═══════════════════════════════════════════════ */
+
+/* ─── HEADER RESPONSIVO ──────────────────────── */
+
+/* Reestrutura o header em 2 linhas */
+.header {
+  height: auto;
+  flex-direction: column;
+  padding: 0;
+  align-items: stretch;
+  gap: 0;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 48px;
+  gap: 12px;
+}
+
+.header-nav {
+  position: static;
+  transform: none;
+  left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 12px 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.header-nav::-webkit-scrollbar { display: none; }
+
+.header-nav-btn {
+  flex-shrink: 0;
+  padding: 5px 14px;
+  font-size: 13px;
+}
+
+.header-actions { gap: 6px; }
+
+/* ─── TOOLBAR RESPONSIVO ─────────────────────── */
+.toolbar {
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.search-input { width: 100%; flex: 1; }
+.search-wrap  { flex: 1; min-width: 120px; }
+.toolbar-spacer { display: none; }
+
+/* ─── STATS BAR RESPONSIVO ───────────────────── */
+.stats-bar { flex-wrap: wrap; }
+.stat-card  { padding: 8px 14px; min-width: calc(50% - 1px); }
+.stat-value { font-size: 18px; }
+
+/* ─── TABLE RESPONSIVO ───────────────────────── */
+.table-wrap { -webkit-overflow-scrolling: touch; }
+.products-table td, .products-table th { padding: 6px 8px; }
+.cell-desc { max-width: 160px; }
+
+/* ─── SELECTION BAR RESPONSIVO ───────────────── */
+.selection-bar { padding: 8px 12px; gap: 8px; }
+
+/* ─── UPLOAD SCREEN RESPONSIVO ───────────────── */
+.upload-screen   { padding: 24px 16px; }
+.pg-import-box   { padding: 16px; }
+.upload-title    { font-size: 20px; }
+
+/* ─── CALENDAR RESPONSIVO ────────────────────── */
+@media (max-width: 768px) {
+  .cal-page         { flex-direction: column; overflow: auto; }
+  .cal-sidebar      { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 220px; overflow-y: auto; }
+  .cal-main         { min-height: 0; flex: 1; }
+  .cal-nav          { padding: 10px 12px; }
+  .cal-resumo       { padding: 8px 12px; }
+  .cal-grid         { padding: 0 6px 12px; }
+  .cal-cell         { min-height: 60px; padding: 4px 5px; }
+  .cal-cell-num     { font-size: 11px; }
+  .cal-cell-tipo    { display: none; }
+  .cal-cell-horas   { font-size: 10px; }
+  .cal-cell-turnos  { display: none; }
+  .cal-dow          { font-size: 9px; }
+  .pg-filters       { grid-template-columns: 1fr; }
+}
+
+/* ─── MODAIS RESPONSIVOS ─────────────────────── */
+@media (max-width: 520px) {
+  .cal-overlay { padding: 0; align-items: flex-end; }
+  .cal-modal   { border-radius: 12px 12px 0 0; max-height: 92vh; }
+
+  .toolbar-sep   { display: none; }
+  .quick-days    { display: none; }
+  .toolbar-label { display: none; }
+  .select-all-wrap { display: none; }
+
+  .stat-card  { padding: 6px 12px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 9px; }
+
+  .cnt-badge-label { display: none; }
+  .btn-label       { display: none; }
+
+  .header-top { padding: 0 12px; }
+  .header-nav { padding: 0 8px 6px; }
+  .header-nav-btn { padding: 4px 12px; font-size: 12px; }
+}
+
 /* ─── CALENDAR PRINT VIEW ────────────────────── */
 .cpv { display: none; }
 

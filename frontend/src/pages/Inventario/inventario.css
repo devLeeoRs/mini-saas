@@ -501,6 +501,30 @@
   justify-content: center;
 }
 
+/* ── Responsivo ──────────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .inv-topbar { padding: 8px 12px; gap: 8px; }
+  .inv-current-name { font-size: 13px; }
+  .inv-topbar-actions .btn { padding: 0 10px; font-size: 10px; height: 28px; }
+
+  .inv-content { padding: 14px 12px; gap: 14px; }
+
+  .inv-input--large { font-size: 17px; padding: 12px 13px; }
+  .inv-input--qty   { font-size: 26px; padding: 14px; }
+
+  .inv-product-desc { font-size: 15px; }
+
+  .inv-stock-val { font-size: 20px; }
+  .inv-stock-icon { width: 34px; height: 34px; }
+
+  .inv-actions { grid-template-columns: 1fr; gap: 8px; }
+  .inv-btn-ok, .inv-btn-count { padding: 16px 12px; }
+
+  .inv-modal { padding: 18px 14px 16px; }
+  .inv-modal-create { flex-direction: column; }
+  .inv-modal-create .btn { width: 100%; justify-content: center; }
+}
+
 /* ── Print ───────────────────────────────────────────────────────────────── */
 @media print {
   .inv-page,
