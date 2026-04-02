@@ -4,39 +4,30 @@ cd "$(dirname "$0")"
 
 echo ""
 echo "============================================================"
-echo "  DEPLOY - Sistema Pedido Ferragem"
+echo "  DEPLOY - Sistema Pedido Ferragem (Docker)"
 echo "============================================================"
 echo ""
 
-# ── 1. Dependencias do backend ────────────────────────────────
-echo "[1/3] Instalando dependencias do backend..."
-cd backend
-npm install --omit=dev
-cd ..
-
-# ── 2. Build do frontend ──────────────────────────────────────
-echo ""
-echo "[2/3] Buildando o frontend..."
-cd frontend
-npm install
-npm run build
-cd ..
-
-# ── 3. PM2 ───────────────────────────────────────────────────
-echo ""
-echo "[3/3] Iniciando/Reiniciando PM2..."
-mkdir -p logs
-
-if pm2 describe pedido-ferragem > /dev/null 2>&1; then
-  pm2 restart ecosystem.config.js --update-env
-else
-  pm2 start ecosystem.config.js
+# Garante que o .env existe
+if [ ! -f .env ]; then
+  echo "ERRO: arquivo .env não encontrado!"
+  echo "Copie o .env.example e preencha as variáveis:"
+  echo "  cp .env.example .env && nano .env"
+  exit 1
 fi
 
-pm2 save
+# Build e sobe o container
+echo "[1/2] Buildando a imagem Docker..."
+docker compose build --no-cache
+
+echo ""
+echo "[2/2] Subindo o container..."
+docker compose up -d
 
 echo ""
 echo "============================================================"
-echo "  Deploy concluido! Rodando na porta 3001."
+echo "  Deploy concluído!"
+echo "  App: https://app.ferragemoliveira.com.br"
+echo "  Logs: docker compose logs -f ferragem"
 echo "============================================================"
 echo ""
