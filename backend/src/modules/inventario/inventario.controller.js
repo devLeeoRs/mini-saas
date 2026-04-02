@@ -62,7 +62,11 @@ const ctrl = {
         SELECT
           p.pro_codigo::text                        AS codigo,
           TRIM(p.pro_descricao)                     AS descricao,
-          TRIM(p.pro_codigo_ean)                    AS gtin,
+          COALESCE(
+            NULLIF(TRIM(p.pro_codigo_ean::text), ''),
+            NULLIF(TRIM(p.pro_codigo_or::text), ''),
+            ''
+          )                                         AS gtin,
           COALESCE(es.estoque, 0)                   AS estoque
         FROM produto p
         LEFT JOIN (
@@ -72,8 +76,9 @@ const ctrl = {
         ) es ON es.pro_codigo = p.pro_codigo
         WHERE p.pro_bloqueio_old = 'N'
           AND (
-            p.pro_codigo::text = $1
-            OR TRIM(p.pro_codigo_ean) = $1
+            p.pro_codigo::text = $1::text
+            OR TRIM(COALESCE(p.pro_codigo_ean::text, '')) = $1::text
+            OR TRIM(COALESCE(p.pro_codigo_or::text, '')) = $1::text
           )
         LIMIT 1
       `, [q]);
