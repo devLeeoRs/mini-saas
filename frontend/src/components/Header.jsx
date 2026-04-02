@@ -4,6 +4,7 @@ export default function Header({
   page, onPageChange,
   contagemCount, onClearContagem, onPrintContagem,
   hasData, onNewUpload,
+  user, onLogout,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -19,7 +20,18 @@ export default function Header({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const navBtn = (key, label) => (
+  const canSee = (key) => {
+    const role = user?.role;
+    if (!role) return false;
+    if (key === 'inventario') return true;
+    if (key === 'pedido') return role === 'admin' || role === 'gerente';
+    if (key === 'horarios') return role === 'admin';
+    return false;
+  };
+
+  const navBtn = (key, label) => {
+    if (!canSee(key)) return null;
+    return (
     <button
       className={`header-nav-btn${page === key ? ' header-nav-btn--active' : ''}`}
       onClick={() => { onPageChange(key); setMenuOpen(false); }}
@@ -27,6 +39,7 @@ export default function Header({
       {label}
     </button>
   );
+  };
 
   return (
     <>
@@ -62,6 +75,12 @@ export default function Header({
                 )}
               </>
             )}
+
+            {user && (
+              <button className="btn ghost" onClick={onLogout} title="Sair">
+                Sair
+              </button>
+            )}
           </div>
         </div>
 
@@ -75,45 +94,51 @@ export default function Header({
 
       {/* Toolbar mobile (bottom) */}
       <nav className="bottom-nav" aria-label="Navegação">
-        <button
-          className={`bottom-nav-btn${page === 'pedido' ? ' active' : ''}`}
-          onClick={() => onPageChange('pedido')}
-          aria-label="Pedido"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-            <rect x="9" y="3" width="6" height="4" rx="1" />
-            <path d="M8 11h8M8 15h8" />
-          </svg>
-          <span>Pedido</span>
-        </button>
+        {canSee('pedido') && (
+          <button
+            className={`bottom-nav-btn${page === 'pedido' ? ' active' : ''}`}
+            onClick={() => onPageChange('pedido')}
+            aria-label="Pedido"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+              <rect x="9" y="3" width="6" height="4" rx="1" />
+              <path d="M8 11h8M8 15h8" />
+            </svg>
+            <span>Pedido</span>
+          </button>
+        )}
 
-        <button
-          className={`bottom-nav-btn${page === 'horarios' ? ' active' : ''}`}
-          onClick={() => onPageChange('horarios')}
-          aria-label="Horários"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 2v3M16 2v3" />
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path d="M3 10h18" />
-            <path d="M12 14v4M12 14h3" />
-          </svg>
-          <span>Horários</span>
-        </button>
+        {canSee('horarios') && (
+          <button
+            className={`bottom-nav-btn${page === 'horarios' ? ' active' : ''}`}
+            onClick={() => onPageChange('horarios')}
+            aria-label="Horários"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 2v3M16 2v3" />
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M3 10h18" />
+              <path d="M12 14v4M12 14h3" />
+            </svg>
+            <span>Horários</span>
+          </button>
+        )}
 
-        <button
-          className={`bottom-nav-btn${page === 'inventario' ? ' active' : ''}`}
-          onClick={() => onPageChange('inventario')}
-          aria-label="Inventário"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z" />
-            <path d="M7 6V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2" />
-            <path d="M8 11v6M12 11v6M16 11v6" />
-          </svg>
-          <span>Inventário</span>
-        </button>
+        {canSee('inventario') && (
+          <button
+            className={`bottom-nav-btn${page === 'inventario' ? ' active' : ''}`}
+            onClick={() => onPageChange('inventario')}
+            aria-label="Inventário"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z" />
+              <path d="M7 6V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2" />
+              <path d="M8 11v6M12 11v6M16 11v6" />
+            </svg>
+            <span>Inventário</span>
+          </button>
+        )}
       </nav>
     </>
   );

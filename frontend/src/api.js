@@ -1,7 +1,15 @@
 const BASE = '/api';
 
+function getToken() {
+  try { return localStorage.getItem('auth_token') || ''; } catch { return ''; }
+}
+
 async function request(url, options = {}) {
-  const res = await fetch(BASE + url, options);
+  const headers = new Headers(options.headers || {});
+  const token = getToken();
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+
+  const res = await fetch(BASE + url, { ...options, headers });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || `Erro ${res.status}`);
@@ -9,11 +17,14 @@ async function request(url, options = {}) {
   return res.json();
 }
 
-export const uploadFile = (file) => {
-  const fd = new FormData();
-  fd.append('file', file);
-  return request('/upload', { method: 'POST', body: fd });
-};
+export const login = (username, password) =>
+  request('/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+
+export const me = () => request('/auth/me');
 
 export const getProducts = () => request('/products');
 export const deleteProducts = () => request('/products', { method: 'DELETE' });

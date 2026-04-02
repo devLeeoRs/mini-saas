@@ -1,11 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getPgFornecedores, getPgDepartamentos, getPgCategorias, getPgMarcas, importFromPg } from '../api';
 import MultiSelectDropdown from './MultiSelectDropdown';
 
-export default function UploadScreen({ onUpload, onPgImport, loading }) {
-  const inputRef = useRef(null);
-  const [dragover, setDragover] = useState(false);
-
+export default function UploadScreen({ onPgImport }) {
   // Dados
   const [fornecedores, setFornecedores] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
@@ -48,21 +45,6 @@ export default function UploadScreen({ onUpload, onPgImport, loading }) {
       .catch(() => setCategorias([]))
       .finally(() => setLoadingCats(false));
   }, [gruCodigo]);
-
-  const handleFile = (file) => {
-    if (!file) return;
-    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-      alert('Envie um arquivo .xlsx ou .xls');
-      return;
-    }
-    onUpload(file);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragover(false);
-    handleFile(e.dataTransfer.files[0]);
-  };
 
   const handleImportPg = async () => {
     setImportError(null);
@@ -180,7 +162,7 @@ export default function UploadScreen({ onUpload, onPgImport, loading }) {
             <button
               className="pg-import-btn"
               onClick={handleImportPg}
-              disabled={importing || loading}
+              disabled={importing}
             >
               {importing
                 ? 'Importando…'
@@ -191,41 +173,6 @@ export default function UploadScreen({ onUpload, onPgImport, loading }) {
           </>
         )}
       </div>
-
-      <div className="upload-divider"><span>ou</span></div>
-
-      {/* ── Upload XLSX ───────────────────────────────── */}
-      <p className="upload-sub">Importe uma planilha de estoque manualmente.</p>
-
-      <div
-        className={`drop-zone${dragover ? ' dragover' : ''}`}
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => { e.preventDefault(); setDragover(true); }}
-        onDragLeave={() => setDragover(false)}
-        onDrop={handleDrop}
-      >
-        <span className="drop-icon">📦</span>
-        <p><strong>Clique aqui</strong> ou arraste o arquivo</p>
-        <p style={{ marginTop: 8 }}>Suporta .xlsx e .xls</p>
-        {loading && <p style={{ marginTop: 12, color: 'var(--accent)' }}>Processando…</p>}
-      </div>
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".xlsx,.xls"
-        style={{ display: 'none' }}
-        onChange={(e) => handleFile(e.target.files[0])}
-      />
-
-      <p className="upload-hint">
-        Colunas esperadas na planilha:<br />
-        <code>codigo</code> &nbsp;
-        <code>descricao</code> &nbsp;
-        <code>estoque</code> &nbsp;
-        <code>vendas_30d</code> &nbsp;
-        <code>preco_custo</code>
-      </p>
     </div>
   );
 }

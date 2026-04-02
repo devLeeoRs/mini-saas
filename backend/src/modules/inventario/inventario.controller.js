@@ -2,55 +2,79 @@ const service = require('./inventario.service');
 const pool    = require('../../config/database');
 
 const ctrl = {
-  listar(req, res) {
-    res.json(service.listar());
+  async listar(req, res, next) {
+    try {
+      res.json(await service.listar());
+    } catch (err) {
+      next(err);
+    }
   },
 
-  criar(req, res) {
-    const { nome } = req.body;
-    if (!nome || !nome.trim()) return res.status(400).json({ error: 'Nome é obrigatório' });
-    const inv = service.criar(nome.trim());
-    res.status(201).json(inv);
+  async criar(req, res, next) {
+    try {
+      const { nome } = req.body;
+      if (!nome || !nome.trim()) return res.status(400).json({ error: 'Nome é obrigatório' });
+      const inv = await service.criar(nome.trim());
+      res.status(201).json(inv);
+    } catch (err) {
+      next(err);
+    }
   },
 
-  obter(req, res) {
-    const inv = service.obter(req.params.id);
-    if (!inv) return res.status(404).json({ error: 'Inventário não encontrado' });
-    res.json(inv);
+  async obter(req, res, next) {
+    try {
+      const inv = await service.obter(req.params.id);
+      if (!inv) return res.status(404).json({ error: 'Inventário não encontrado' });
+      res.json(inv);
+    } catch (err) {
+      next(err);
+    }
   },
 
-  atualizar(req, res) {
-    const inv = service.atualizar(req.params.id, req.body);
-    if (!inv) return res.status(404).json({ error: 'Inventário não encontrado' });
-    res.json(inv);
+  async atualizar(req, res, next) {
+    try {
+      const inv = await service.atualizar(req.params.id, req.body);
+      if (!inv) return res.status(404).json({ error: 'Inventário não encontrado' });
+      res.json(inv);
+    } catch (err) {
+      next(err);
+    }
   },
 
-  salvarProduto(req, res) {
-    const { codigo, gtin, descricao, estoqueAtual, quantidadeDigitada, ok } = req.body;
-    if (!codigo) return res.status(400).json({ error: 'Código é obrigatório' });
+  async salvarProduto(req, res, next) {
+    try {
+      const { codigo, gtin, descricao, estoqueAtual, quantidadeDigitada, ok } = req.body;
+      if (!codigo) return res.status(400).json({ error: 'Código é obrigatório' });
 
-    const qtd = quantidadeDigitada != null ? Number(quantidadeDigitada) : null;
-    const est = Number(estoqueAtual ?? 0);
+      const qtd = quantidadeDigitada != null ? Number(quantidadeDigitada) : null;
+      const est = Number(estoqueAtual ?? 0);
 
-    const produto = {
-      codigo,
-      gtin:              gtin ?? '',
-      descricao:         descricao ?? '',
-      estoqueAtual:      est,
-      quantidadeDigitada: qtd,
-      diferenca:         qtd != null ? qtd - est : null,
-      ok:                ok ?? false,
-    };
+      const produto = {
+        codigo,
+        gtin:              gtin ?? '',
+        descricao:         descricao ?? '',
+        estoqueAtual:      est,
+        quantidadeDigitada: qtd,
+        diferenca:         qtd != null ? qtd - est : null,
+        ok:                ok ?? false,
+      };
 
-    const inv = service.salvarProduto(req.params.id, produto);
-    if (!inv) return res.status(404).json({ error: 'Inventário não encontrado' });
-    res.json({ produto, inventario: inv });
+      const inv = await service.salvarProduto(req.params.id, produto);
+      if (!inv) return res.status(404).json({ error: 'Inventário não encontrado' });
+      res.json({ produto, inventario: inv });
+    } catch (err) {
+      next(err);
+    }
   },
 
-  excluir(req, res) {
-    const ok = service.excluir(req.params.id);
-    if (!ok) return res.status(404).json({ error: 'Inventário não encontrado' });
-    res.json({ success: true });
+  async excluir(req, res, next) {
+    try {
+      const ok = await service.excluir(req.params.id);
+      if (!ok) return res.status(404).json({ error: 'Inventário não encontrado' });
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
   },
 
   async buscarProduto(req, res, next) {

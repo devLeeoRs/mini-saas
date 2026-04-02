@@ -11,6 +11,7 @@ backend/data/
 logs/
 
 # Variaveis de ambiente
+.env
 backend/.env
 
 # Sistema

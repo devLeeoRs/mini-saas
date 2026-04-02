@@ -6,6 +6,7 @@ import Header from './components/Header';
 import UploadScreen from './components/UploadScreen';
 import HorariosPage from './pages/HorariosPage';
 import InventarioPage from './pages/Inventario';
+import LoginPage from './pages/Login';
 import Toolbar from './components/Toolbar';
 import StatsBar from './components/StatsBar';
 import ProductTable from './components/ProductTable';
@@ -13,6 +14,7 @@ import SelectionBar from './components/SelectionBar';
 import PrintView from './components/PrintView';
 
 export default function App() {
+  const [authUser, setAuthUser] = useState(null);
   // ── Dados do servidor ──────────────────────────
   const [products, setProducts] = useState([]);
   const [pedido, setPedido] = useState({});
@@ -29,9 +31,55 @@ export default function App() {
   const [sort, setSort] = useState({ key: 'qtdSugerida', dir: 'desc' });
   const [printJob, setPrintJob] = useState(null);
   const [toast, setToast] = useState(null);
-  const [loading, setLoading] = useState(false);
   const toastTimer = useRef(null);
   const contagemRef = useRef(contagem);
+
+  const saveSession = useCallback(({ token, user }) => {
+    try { localStorage.setItem('auth_token', token); } catch {}
+    setAuthUser(user);
+
+    // Ajusta a tela inicial conforme role
+    if (user?.role === 'admin') return;
+    if (user?.role === 'gerente' && page === 'horarios') setPage('pedido');
+    if (user?.role === 'funcionario') setPage('inventario');
+  }, [page]);
+
+  const clearSession = useCallback(() => {
+    try { localStorage.removeItem('auth_token'); } catch {}
+    setAuthUser(null);
+  }, []);
+
+  const canSee = useCallback((key, role) => {
+    if (!role) return false;
+    if (key === 'inventario') return true;
+    if (key === 'pedido') return role === 'admin' || role === 'gerente';
+    if (key === 'horarios') return role === 'admin';
+    return false;
+  }, []);
+
+  const ensureAllowedPage = useCallback((role) => {
+    const current = page;
+    if (canSee(current, role)) return;
+    if (canSee('inventario', role)) setPage('inventario');
+    else if (canSee('pedido', role)) setPage('pedido');
+    else setPage('inventario');
+  }, [page, canSee]);
+
+  // ── Sessão (token) ─────────────────────────────
+  useEffect(() => {
+    let token = '';
+    try { token = localStorage.getItem('auth_token') || ''; } catch {}
+    if (!token) return;
+
+    api.me()
+      .then(({ user }) => {
+        setAuthUser(user);
+        ensureAllowedPage(user.role);
+      })
+      .catch(() => {
+        clearSession();
+      });
+  }, []);
 
   useEffect(() => {
     contagemRef.current = contagem;
@@ -39,6 +87,8 @@ export default function App() {
 
   // ── Carrega dados ao iniciar ───────────────────
   useEffect(() => {
+    if (!authUser) return;
+    if (!canSee('pedido', authUser.role)) return;
     Promise.all([
       api.getProducts(),
       api.getPedido(),
@@ -52,7 +102,7 @@ export default function App() {
     }).catch(() => {
       showToast('Não foi possível conectar ao servidor', 'error');
     });
-  }, []);
+  }, [authUser]);
 
   // ── Produtos calculados ────────────────────────
   const computed = useMemo(() =>
@@ -119,23 +169,6 @@ export default function App() {
   }, []);
 
   // ── Handlers ──────────────────────────────────
-  const handleUpload = useCallback(async (file) => {
-    setLoading(true);
-    try {
-      const result = await api.uploadFile(file);
-      const [prods, ped, cont] = await Promise.all([api.getProducts(), api.getPedido(), api.getContagem()]);
-      setProducts(prods);
-      setPedido(ped);
-      setContagem(new Set(cont));
-      setSelected(new Set());
-      showToast(`${result.count} produtos carregados com sucesso`);
-    } catch (err) {
-      showToast('Erro ao processar arquivo: ' + err.message, 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [showToast]);
-
   const handlePgImport = useCallback(async (result) => {
     const [prods, ped, cont] = await Promise.all([api.getProducts(), api.getPedido(), api.getContagem()]);
     setProducts(prods);
@@ -245,89 +278,102 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header
-        page={page}
-        onPageChange={setPage}
-        contagemCount={contagem.size}
-        onClearContagem={handleClearContagem}
-        onPrintContagem={() => handlePrint({ mode: 'contagem', products: contagemProducts })}
-        hasData={products.length > 0}
-        onNewUpload={handleNewUpload}
-      />
-
-      {page === 'inventario' ? (
-        <InventarioPage />
-      ) : page === 'horarios' ? (
-        <HorariosPage />
-      ) : products.length === 0 ? (
-        <UploadScreen onUpload={handleUpload} onPgImport={handlePgImport} loading={loading} />
+      {!authUser ? (
+        <LoginPage onLogin={saveSession} />
       ) : (
-        <main>
-          <Toolbar
-            dias={config.dias_estoque}
-            onDiasChange={handleDiasChange}
-            filter={filter}
-            onFilterChange={setFilter}
-            search={search}
-            onSearchChange={setSearch}
-            allSelected={allSelected}
-            onSelectAll={handleSelectAll}
-            onExportXLSX={() => handleExportXLSX(filtered)}
-            onExportPDF={() => {
-              if (printableFilteredPedidoProducts.length === 0) {
-                showToast('Nenhum item com Qtd Pedido > 0', 'error');
-                return;
-              }
-              handlePrint({ mode: 'pedido', products: printableFilteredPedidoProducts, label: 'Itens filtrados', diasEstoque: config.dias_estoque });
-            }}
-          />
-          <StatsBar stats={stats} />
-          <ProductTable
-            products={filtered}
-            pedido={pedido}
-            contagem={contagem}
-            selected={selected}
-            sort={sort}
-            diasEstoque={config.dias_estoque}
-            onQtdChange={handleQtdChange}
-            onQtdReset={handleQtdReset}
-            onContagemToggle={handleContagemToggle}
-            onSelectOne={handleSelectOne}
-            onSort={handleSort}
-          />
-        </main>
-      )}
-
-      {selected.size > 0 && products.length > 0 && (
-        <SelectionBar
-          selectedProducts={selectedProducts}
-          pedido={pedido}
-          onClearSelection={() => setSelected(new Set())}
-          onExportPDF={() => {
-            if (printablePedidoProducts.length === 0) {
-              showToast('Nenhum item com Qtd Pedido > 0', 'error');
-              return;
-            }
-            handlePrint({ mode: 'pedido', products: printablePedidoProducts, label: 'Itens selecionados', diasEstoque: config.dias_estoque });
+        <Header
+          page={page}
+          onPageChange={(next) => {
+            if (canSee(next, authUser.role)) setPage(next);
+            else ensureAllowedPage(authUser.role);
           }}
-          onExportXLSX={() => handleExportXLSX(selectedProducts)}
+          contagemCount={contagem.size}
+          onClearContagem={handleClearContagem}
+          onPrintContagem={() => handlePrint({ mode: 'contagem', products: contagemProducts })}
+          hasData={products.length > 0}
+          onNewUpload={handleNewUpload}
+          user={authUser}
+          onLogout={clearSession}
         />
       )}
 
-      {printJob && (
-        <PrintView
-          mode={printJob.mode}
-          products={printJob.products}
-          pedido={pedido}
-          diasEstoque={printJob.diasEstoque}
-          label={printJob.label}
-        />
-      )}
+      {authUser && (
+        <>
+          {page === 'inventario' ? (
+            <InventarioPage />
+          ) : page === 'horarios' ? (
+            <HorariosPage />
+          ) : products.length === 0 ? (
+            <UploadScreen onPgImport={handlePgImport} />
+          ) : (
+            <main>
+              <Toolbar
+                dias={config.dias_estoque}
+                onDiasChange={handleDiasChange}
+                filter={filter}
+                onFilterChange={setFilter}
+                search={search}
+                onSearchChange={setSearch}
+                allSelected={allSelected}
+                onSelectAll={handleSelectAll}
+                onExportXLSX={() => handleExportXLSX(filtered)}
+                onExportPDF={() => {
+                  if (printableFilteredPedidoProducts.length === 0) {
+                    showToast('Nenhum item com Qtd Pedido > 0', 'error');
+                    return;
+                  }
+                  handlePrint({ mode: 'pedido', products: printableFilteredPedidoProducts, label: 'Itens filtrados', diasEstoque: config.dias_estoque });
+                }}
+              />
+              <StatsBar stats={stats} />
+              <ProductTable
+                products={filtered}
+                pedido={pedido}
+                contagem={contagem}
+                selected={selected}
+                sort={sort}
+                diasEstoque={config.dias_estoque}
+                onQtdChange={handleQtdChange}
+                onQtdReset={handleQtdReset}
+                onContagemToggle={handleContagemToggle}
+                onSelectOne={handleSelectOne}
+                onSort={handleSort}
+              />
+            </main>
+          )}
 
-      {toast && (
-        <div className={`toast ${toast.type}`}>
-          {toast.message}
-        </div>
+          {selected.size > 0 && products.length > 0 && (
+            <SelectionBar
+              selectedProducts={selectedProducts}
+              pedido={pedido}
+              onClearSelection={() => setSelected(new Set())}
+              onExportPDF={() => {
+                if (printablePedidoProducts.length === 0) {
+                  showToast('Nenhum item com Qtd Pedido > 0', 'error');
+                  return;
+                }
+                handlePrint({ mode: 'pedido', products: printablePedidoProducts, label: 'Itens selecionados', diasEstoque: config.dias_estoque });
+              }}
+              onExportXLSX={() => handleExportXLSX(selectedProducts)}
+            />
+          )}
+
+          {printJob && (
+            <PrintView
+              mode={printJob.mode}
+              products={printJob.products}
+              pedido={pedido}
+              diasEstoque={printJob.diasEstoque}
+              label={printJob.label}
+            />
+          )}
+
+          {toast && (
+            <div className={`toast ${toast.type}`}>
+              {toast.message}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

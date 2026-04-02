@@ -114,9 +114,11 @@ export default function CalendarPrintView({ funcionario, escalas, date }) {
                     {d.getDate()}
                   </span>
 
-                  {st && (
+                  {escala && (
                     <div className="cpv-info">
-                      <span className="cpv-tipo" style={{ color: st.labelColor }}>{st.label}</span>
+                      {st && (
+                        <span className="cpv-tipo" style={{ color: st.labelColor }}>{st.label}</span>
+                      )}
                       {horas > 0 && <span className="cpv-horas">{formatHoras(horas)}</span>}
                       {escala?.turnos?.length > 0 && (
                         <div className="cpv-turnos">

@@ -37,7 +37,7 @@ async function importar(req, res, next) {
       return res.status(404).json({ error: 'Nenhum produto encontrado com os filtros selecionados.' });
     }
 
-    productsService.saveAll(products);
+    await productsService.saveAll(products);
     res.json({ success: true, count: products.length });
   } catch (err) {
     next(err);

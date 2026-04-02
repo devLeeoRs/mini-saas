@@ -1,17 +1,29 @@
-const db = require('../../shared/jsonDb');
+const appDb = require('../../config/appDatabase');
 
-function getAll() {
-  return db.read().pedido;
+async function getAll() {
+  const { rows } = await appDb.query(
+    'SELECT codigo, quantidade FROM app_pedido_items'
+  );
+  const pedido = {};
+  for (const r of rows) pedido[String(r.codigo)] = Number(r.quantidade);
+  return pedido;
 }
 
-function updateItem(codigo, quantidade) {
-  const data = db.read();
+async function updateItem(codigo, quantidade) {
+  const cod = String(codigo);
   if (quantidade === null || quantidade === undefined) {
-    delete data.pedido[codigo];
-  } else {
-    data.pedido[codigo] = Number(quantidade);
+    await appDb.query('DELETE FROM app_pedido_items WHERE codigo = $1', [cod]);
+    return;
   }
-  db.write(data);
+
+  const qtd = Number(quantidade);
+  await appDb.query(
+    `INSERT INTO app_pedido_items (codigo, quantidade, updated_at)
+     VALUES ($1, $2, now())
+     ON CONFLICT (codigo)
+     DO UPDATE SET quantidade = EXCLUDED.quantidade, updated_at = now()`,
+    [cod, qtd]
+  );
 }
 
 module.exports = { getAll, updateItem };

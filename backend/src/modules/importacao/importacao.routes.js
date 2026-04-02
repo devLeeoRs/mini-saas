@@ -1,7 +1,10 @@
 const { Router } = require('express');
 const controller  = require('./importacao.controller');
+const { requireAuth, requireRole } = require('../../middlewares/auth');
 
 const router = Router();
+
+router.use(requireAuth, requireRole('admin', 'gerente'));
 
 router.get('/fornecedores',  controller.getFornecedores);
 router.get('/departamentos', controller.getDepartamentos);

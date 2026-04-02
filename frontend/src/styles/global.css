@@ -28,6 +28,85 @@ body {
   color: var(--text);
 }
 
+/* ─── LOGIN ──────────────────────────────────── */
+.login-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 20px 70px rgba(0,0,0,0.35);
+}
+
+.login-brand {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.login-brand span { color: var(--text2); font-weight: 500; }
+
+.login-title {
+  margin-top: 14px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.login-sub {
+  margin-top: 6px;
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.login-form { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.login-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.login-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--mono);
+  padding: 11px 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.login-input:focus { border-color: var(--accent2); }
+
+.login-error {
+  margin-top: 2px;
+  border: 1px solid rgba(255,71,87,0.35);
+  background: rgba(255,71,87,0.08);
+  color: var(--danger);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: var(--mono);
+}
+
+.login-btn { height: 36px; justify-content: center; }
+
 /* ─── LAYOUT PRINCIPAL ───────────────────────── */
 .app {
   display: flex;
@@ -1350,7 +1429,8 @@ main {
   .cal-cell-num     { font-size: 11px; }
   .cal-cell-tipo    { display: none; }
   .cal-cell-horas   { font-size: 10px; }
-  .cal-cell-turnos  { display: none; }
+  .cal-cell-turnos  { display: flex; max-height: 22px; overflow: hidden; }
+  .cal-cell-turnos span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cal-dow          { font-size: 9px; }
   .pg-filters       { grid-template-columns: 1fr; }
 }

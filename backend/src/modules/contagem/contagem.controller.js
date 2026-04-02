@@ -1,25 +1,25 @@
 const service = require('./contagem.service');
 
-function getContagem(req, res, next) {
-  try { res.json(service.getAll()); } catch (err) { next(err); }
+async function getContagem(req, res, next) {
+  try { res.json(await service.getAll()); } catch (err) { next(err); }
 }
 
-function addContagem(req, res, next) {
+async function addContagem(req, res, next) {
   try {
-    service.addItem(decodeURIComponent(req.params.codigo));
+    await service.addItem(decodeURIComponent(req.params.codigo));
     res.json({ success: true });
   } catch (err) { next(err); }
 }
 
-function removeContagem(req, res, next) {
+async function removeContagem(req, res, next) {
   try {
-    service.removeItem(decodeURIComponent(req.params.codigo));
+    await service.removeItem(decodeURIComponent(req.params.codigo));
     res.json({ success: true });
   } catch (err) { next(err); }
 }
 
-function clearContagem(req, res, next) {
-  try { service.clearAll(); res.json({ success: true }); } catch (err) { next(err); }
+async function clearContagem(req, res, next) {
+  try { await service.clearAll(); res.json({ success: true }); } catch (err) { next(err); }
 }
 
 module.exports = { getContagem, addContagem, removeContagem, clearContagem };

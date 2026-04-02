@@ -1,7 +1,10 @@
 const { Router } = require('express');
 const controller  = require('./inventario.controller');
+const { requireAuth } = require('../../middlewares/auth');
 
 const router = Router();
+
+router.use(requireAuth);
 
 router.get('/buscar-produto',  controller.buscarProduto);   // GET /inventarios/buscar-produto?q=...
 router.get('/',                controller.listar);

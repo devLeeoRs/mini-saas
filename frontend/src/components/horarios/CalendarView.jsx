@@ -48,9 +48,9 @@ export default function CalendarView({ year, month, escalas, onDayClick }) {
               >
                 <span className="cal-cell-num">{date.getDate()}</span>
 
-                {meta && (
+                {escala && (
                   <div className="cal-cell-info">
-                    <span className="cal-cell-tipo">{meta.label}</span>
+                    {meta && <span className="cal-cell-tipo">{meta.label}</span>}
                     {horas > 0 && (
                       <span className="cal-cell-horas">{formatHoras(horas)}</span>
                     )}

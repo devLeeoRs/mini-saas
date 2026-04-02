@@ -1,8 +1,8 @@
 const service = require('./funcionarios.service');
 
-const get    = (req, res, next) => { try { res.json(service.getAll()); }             catch (e) { next(e); } };
-const create = (req, res, next) => { try { res.status(201).json(service.create(req.body)); } catch (e) { next(e); } };
-const update = (req, res, next) => { try { res.json(service.update(req.params.id, req.body)); } catch (e) { next(e); } };
-const remove = (req, res, next) => { try { service.remove(req.params.id); res.json({ success: true }); } catch (e) { next(e); } };
+const get    = async (req, res, next) => { try { res.json(await service.getAll()); }             catch (e) { next(e); } };
+const create = async (req, res, next) => { try { res.status(201).json(await service.create(req.body)); } catch (e) { next(e); } };
+const update = async (req, res, next) => { try { res.json(await service.update(req.params.id, req.body)); } catch (e) { next(e); } };
+const remove = async (req, res, next) => { try { await service.remove(req.params.id); res.json({ success: true }); } catch (e) { next(e); } };
 
 module.exports = { get, create, update, remove };

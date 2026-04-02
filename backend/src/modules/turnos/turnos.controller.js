@@ -1,18 +1,36 @@
 const svc = require('./turnos.service');
 
-exports.getAll = (req, res) => res.json(svc.getAll());
-
-exports.create = (req, res) => {
-  const item = svc.create(req.body);
-  res.status(201).json(item);
+exports.getAll = async (req, res, next) => {
+  try {
+    res.json(await svc.getAll());
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.update = (req, res) => {
-  const item = svc.update(req.params.id, req.body);
-  res.json(item);
+exports.create = async (req, res, next) => {
+  try {
+    const item = await svc.create(req.body);
+    res.status(201).json(item);
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.remove = (req, res) => {
-  svc.remove(req.params.id);
-  res.status(204).end();
+exports.update = async (req, res, next) => {
+  try {
+    const item = await svc.update(req.params.id, req.body);
+    res.json(item);
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.remove = async (req, res, next) => {
+  try {
+    await svc.remove(req.params.id);
+    res.status(204).end();
+  } catch (e) {
+    next(e);
+  }
 };

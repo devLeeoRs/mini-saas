@@ -1,18 +1,18 @@
 const service = require('./pedido.service');
 
-function getPedido(req, res, next) {
+async function getPedido(req, res, next) {
   try {
-    res.json(service.getAll());
+    res.json(await service.getAll());
   } catch (err) {
     next(err);
   }
 }
 
-function updatePedido(req, res, next) {
+async function updatePedido(req, res, next) {
   try {
     const codigo    = decodeURIComponent(req.params.codigo);
     const { quantidade } = req.body;
-    service.updateItem(codigo, quantidade);
+    await service.updateItem(codigo, quantidade);
     res.json({ success: true });
   } catch (err) {
     next(err);

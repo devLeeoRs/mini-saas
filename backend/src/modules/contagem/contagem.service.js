@@ -1,25 +1,26 @@
-const db = require('../../shared/jsonDb');
+const appDb = require('../../config/appDatabase');
 
-function getAll() {
-  return db.read().contagem;
+async function getAll() {
+  const { rows } = await appDb.query('SELECT codigo FROM app_contagem_items ORDER BY codigo');
+  return rows.map(r => String(r.codigo));
 }
 
-function addItem(codigo) {
-  const data = db.read();
-  if (!data.contagem.includes(codigo)) data.contagem.push(codigo);
-  db.write(data);
+async function addItem(codigo) {
+  const cod = String(codigo);
+  await appDb.query(
+    `INSERT INTO app_contagem_items (codigo, updated_at)
+     VALUES ($1, now())
+     ON CONFLICT (codigo) DO UPDATE SET updated_at = now()`,
+    [cod]
+  );
 }
 
-function removeItem(codigo) {
-  const data = db.read();
-  data.contagem = data.contagem.filter(c => c !== codigo);
-  db.write(data);
+async function removeItem(codigo) {
+  await appDb.query('DELETE FROM app_contagem_items WHERE codigo = $1', [String(codigo)]);
 }
 
-function clearAll() {
-  const data = db.read();
-  data.contagem = [];
-  db.write(data);
+async function clearAll() {
+  await appDb.query('TRUNCATE app_contagem_items');
 }
 
 module.exports = { getAll, addItem, removeItem, clearAll };
