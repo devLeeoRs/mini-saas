@@ -5,6 +5,7 @@ import { exportXLSX } from './utils/export';
 import Header from './components/Header';
 import UploadScreen from './components/UploadScreen';
 import HorariosPage from './pages/HorariosPage';
+import InventarioPage from './pages/Inventario';
 import Toolbar from './components/Toolbar';
 import StatsBar from './components/StatsBar';
 import ProductTable from './components/ProductTable';
@@ -254,7 +255,9 @@ export default function App() {
         onNewUpload={handleNewUpload}
       />
 
-      {page === 'horarios' ? (
+      {page === 'inventario' ? (
+        <InventarioPage />
+      ) : page === 'horarios' ? (
         <HorariosPage />
       ) : products.length === 0 ? (
         <UploadScreen onUpload={handleUpload} onPgImport={handlePgImport} loading={loading} />

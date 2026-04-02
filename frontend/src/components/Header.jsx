@@ -23,6 +23,12 @@ export default function Header({
         >
           Horários
         </button>
+        <button
+          className={`header-nav-btn${page === 'inventario' ? ' header-nav-btn--active' : ''}`}
+          onClick={() => onPageChange('inventario')}
+        >
+          Inventário
+        </button>
       </nav>
 
       <div className="header-actions">

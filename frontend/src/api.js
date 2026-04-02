@@ -58,6 +58,15 @@ export const createTurno   = (data) => request('/turnos', { method: 'POST', head
 export const updateTurno   = (id, data) => request(`/turnos/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
 export const deleteTurno   = (id) => request(`/turnos/${id}`, { method: 'DELETE' });
 
+// ── Inventário ────────────────────────────────────────────────────────────────
+export const getInventarios    = () => request('/inventarios');
+export const criarInventario   = (nome) => request('/inventarios', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome }) });
+export const getInventario     = (id) => request(`/inventarios/${id}`);
+export const atualizarInventario = (id, data) => request(`/inventarios/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+export const salvarProdutoInventario = (id, produto) => request(`/inventarios/${id}/produto`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(produto) });
+export const excluirInventario       = (id) => request(`/inventarios/${id}`, { method: 'DELETE' });
+export const buscarProdutoInventario = (q) => request(`/inventarios/buscar-produto?q=${encodeURIComponent(q)}`);
+
 // ── PostgreSQL ────────────────────────────────────────────────────────────────
 export const getPgFornecedores = () => request('/pg/fornecedores');
 export const getPgDepartamentos = () => request('/pg/departamentos');

@@ -13,6 +13,7 @@ const importacaoRoutes   = require('./modules/importacao/importacao.routes');
 const funcionariosRoutes = require('./modules/funcionarios/funcionarios.routes');
 const escalasRoutes      = require('./modules/escalas/escalas.routes');
 const turnosRoutes       = require('./modules/turnos/turnos.routes');
+const inventarioRoutes   = require('./modules/inventario/inventario.routes');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/pg',           importacaoRoutes);
 app.use('/api/funcionarios', funcionariosRoutes);
 app.use('/api/escalas',      escalasRoutes);
 app.use('/api/turnos',       turnosRoutes);
+app.use('/api/inventarios',  inventarioRoutes);
 
 // ── Frontend estático (produção) ──────────────────────────────────────────────
 const distPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
