@@ -36,13 +36,34 @@ async function findClientByCpf(cpf) {
   const normalized = normalizeCPF(cpf);
   if (normalized.length !== 11) return null;
 
-  const { rows } = await appDb.query(
-    `SELECT cpf, nome
-     FROM app_pos_clients
-     WHERE cpf = $1
-     LIMIT 1`,
-    [normalized]
-  );
+  // Prefer the POS CPF cache table (avoids older app_pos_clients schemas)
+  let rows = [];
+  try {
+    ({ rows } = await appDb.query(
+      `SELECT cpf, nome
+       FROM app_pos_clients_cpf
+       WHERE cpf = $1
+       LIMIT 1`,
+      [normalized]
+    ));
+  } catch {
+    rows = [];
+  }
+
+  // Fallback for older deployments (best-effort)
+  if (!rows.length) {
+    try {
+      ({ rows } = await appDb.query(
+        `SELECT cpf, nome
+         FROM app_pos_clients
+         WHERE cpf = $1
+         LIMIT 1`,
+        [normalized]
+      ));
+    } catch {
+      rows = [];
+    }
+  }
 
   if (!rows.length) return null;
 
@@ -226,7 +247,7 @@ async function createSale(payload, user) {
 
   if (sale.cliente?.cpf && sale.cliente?.nome) {
     await appDb.query(
-      `INSERT INTO app_pos_clients (cpf, nome, updated_at)
+      `INSERT INTO app_pos_clients_cpf (cpf, nome, updated_at)
        VALUES ($1, $2, now())
        ON CONFLICT (cpf)
        DO UPDATE SET nome = EXCLUDED.nome, updated_at = now()`,
@@ -359,7 +380,7 @@ function buildReceiptText(saleRow) {
   lines.push('');
   lines.push(`Total: ${moneyBRL(total)}`);
   lines.push('');
-  lines.push('Obrigado pela preferencia, se precisar de algo e so chamar! 😉');
+  lines.push('Obrigado pela preferência, se precisar de algo é só chamar! 😉');
 
   return lines.join('\n');
 }

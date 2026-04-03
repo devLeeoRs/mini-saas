@@ -3,13 +3,18 @@ services:
     build: .
     container_name: ferragem_app
     restart: unless-stopped
-    env_file: backend/.env
+    # Env vars injected into the container (the backend image does not ship a .env file)
+    env_file: .env
+    environment:
+      # Uazapi (WhatsApp)
+      - UAZAPI_SUBDOMAIN=${UAZAPI_SUBDOMAIN}
+      - UAZAPI_TOKEN=${UAZAPI_TOKEN}
     volumes:
       # Persiste os dados JSON entre deploys
       - ./backend/data:/app/backend/data
     networks:
       - n8n_default        # Rede do Traefik (para roteamento HTTP/HTTPS)
-      # - postgres_net       # Rede do PostgreSQL
+      - postgres-docker_postgres_net       # Rede do PostgreSQL
     labels:
       - "traefik.enable=true"
       # ── HTTPS ──────────────────────────────────────────────────────────────

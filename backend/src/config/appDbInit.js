@@ -135,6 +135,16 @@ async function ensureAppDbSchema() {
       updated_at timestamptz NOT NULL DEFAULT now()
     );
   `);
+
+  // POS mobile client lookup cache by CPF.
+  // This table name avoids conflicts with older schemas that used app_pos_clients differently.
+  await appDb.query(`
+    CREATE TABLE IF NOT EXISTS app_pos_clients_cpf (
+      cpf        text PRIMARY KEY,
+      nome       text NOT NULL DEFAULT '',
+      updated_at timestamptz NOT NULL DEFAULT now()
+    );
+  `);
 }
 
 module.exports = { ensureAppDbSchema };
