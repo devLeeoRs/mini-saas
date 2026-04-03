@@ -14,6 +14,7 @@ const escalasRoutes      = require('./modules/escalas/escalas.routes');
 const turnosRoutes       = require('./modules/turnos/turnos.routes');
 const inventarioRoutes   = require('./modules/inventario/inventario.routes');
 const authRoutes         = require('./modules/auth/auth.routes');
+const posRoutes          = require('./modules/pos/pos.routes');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/escalas',      escalasRoutes);
 app.use('/api/turnos',       turnosRoutes);
 app.use('/api/inventarios',  inventarioRoutes);
 app.use('/api/auth',         authRoutes);
+app.use('/api/pos',          posRoutes);
 
 // ── Frontend estático (produção) ──────────────────────────────────────────────
 const distPath = path.join(__dirname, '..', '..', 'frontend', 'dist');

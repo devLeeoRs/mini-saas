@@ -24,6 +24,7 @@ export default function Header({
     const role = user?.role;
     if (!role) return false;
     if (key === 'inventario') return true;
+    if (key === 'pos') return true;
     if (key === 'pedido') return role === 'admin' || role === 'gerente';
     if (key === 'horarios') return role === 'admin';
     return false;
@@ -87,6 +88,7 @@ export default function Header({
         {/* Navegação entre módulos */}
         <nav className="header-nav">
           {navBtn('pedido', 'Pedido')}
+          {navBtn('pos', 'POS')}
           {navBtn('horarios', 'Horários')}
           {navBtn('inventario', 'Inventário')}
         </nav>
@@ -106,6 +108,20 @@ export default function Header({
               <path d="M8 11h8M8 15h8" />
             </svg>
             <span>Pedido</span>
+          </button>
+        )}
+
+        {canSee('pos') && (
+          <button
+            className={`bottom-nav-btn${page === 'pos' ? ' active' : ''}`}
+            onClick={() => onPageChange('pos')}
+            aria-label="POS"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 5h16v14H4z" />
+              <path d="M8 9h8M8 13h5" />
+            </svg>
+            <span>POS</span>
           </button>
         )}
 

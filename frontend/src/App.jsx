@@ -7,6 +7,7 @@ import UploadScreen from './components/UploadScreen';
 import HorariosPage from './pages/HorariosPage';
 import InventarioPage from './pages/Inventario';
 import LoginPage from './pages/Login';
+import PosMobilePage from './modules/pos/pages/PosMobile';
 import Toolbar from './components/Toolbar';
 import StatsBar from './components/StatsBar';
 import ProductTable from './components/ProductTable';
@@ -52,6 +53,7 @@ export default function App() {
   const canSee = useCallback((key, role) => {
     if (!role) return false;
     if (key === 'inventario') return true;
+    if (key === 'pos') return true;
     if (key === 'pedido') return role === 'admin' || role === 'gerente';
     if (key === 'horarios') return role === 'admin';
     return false;
@@ -301,6 +303,10 @@ export default function App() {
         <>
           {page === 'inventario' ? (
             <InventarioPage />
+          ) : page === 'pos' ? (
+            <main>
+              <PosMobilePage />
+            </main>
           ) : page === 'horarios' ? (
             <HorariosPage />
           ) : products.length === 0 ? (
