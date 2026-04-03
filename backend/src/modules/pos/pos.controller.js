@@ -36,9 +36,24 @@ async function createSale(req, res, next) {
   }
 }
 
+async function sendSaleWhatsappReceipt(req, res, next) {
+  try {
+    const { phone } = req.body || {};
+    if (!phone || !String(phone).trim()) {
+      return res.status(400).json({ error: 'Telefone WhatsApp e obrigatorio' });
+    }
+
+    const result = await service.sendSaleWhatsappReceipt(req.params.id, phone);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   findClientByCpf,
   getProductByCode,
   searchProducts,
   createSale,
+  sendSaleWhatsappReceipt,
 };

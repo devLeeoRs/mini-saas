@@ -41,3 +41,11 @@ export function createSale(data) {
     body: JSON.stringify(data),
   });
 }
+
+export function sendSaleWhatsappReceipt(saleId, phone) {
+  return request(`/vendas/${encodeURIComponent(saleId)}/whatsapp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone }),
+  });
+}

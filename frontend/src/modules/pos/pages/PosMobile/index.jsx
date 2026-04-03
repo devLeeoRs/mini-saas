@@ -9,7 +9,8 @@ import PaymentScreen from '../../components/PaymentScreen';
 import EditItemModal from '../../components/EditItemModal';
 import AddPaymentModal from '../../components/AddPaymentModal';
 import { usePOS } from '../../hooks/usePOS';
-import { createSale, findClientByCpf, getProductByCode, searchProducts } from '../../services/pos.service';
+import WhatsappReceiptModal from '../../components/WhatsappReceiptModal';
+import { createSale, findClientByCpf, getProductByCode, searchProducts, sendSaleWhatsappReceipt } from '../../services/pos.service';
 
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 const money = (value) => brl.format(value || 0);
@@ -36,6 +37,12 @@ function isValidEAN13(raw) {
   }
   const check = (10 - (sum % 10)) % 10;
   return check === (digits.charCodeAt(12) - 48);
+}
+
+function isValidBarcode(raw) {
+  const digits = normalizeDigits(raw);
+  if (digits.length === 13) return isValidEAN13(digits);
+  return digits.length === 12;
 }
 
 function normalizeCPF(value) {
@@ -112,6 +119,12 @@ export default function PosMobilePage() {
 
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [paymentForm, setPaymentForm] = useState(defaultPayment(0));
+
+  const [whatsOpen, setWhatsOpen] = useState(false);
+  const [lastSale, setLastSale] = useState(null);
+  const [whatsPhone, setWhatsPhone] = useState(() => {
+    try { return localStorage.getItem('pos_whatsapp_phone') || ''; } catch { return ''; }
+  });
 
   const [scanOpen, setScanOpen] = useState(false);
   const [scanStatus, setScanStatus] = useState('');
@@ -220,7 +233,7 @@ export default function PosMobilePage() {
     ]);
 
     const hints = new Map();
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]);
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13, BarcodeFormat.UPC_A]);
     hints.set(DecodeHintType.TRY_HARDER, true);
 
     const reader = new BrowserMultiFormatReader(hints, {
@@ -248,8 +261,8 @@ export default function PosMobilePage() {
           if (lastScanRef.current.text === digits && (now - lastScanRef.current.at) < 1200) return;
           lastScanRef.current = { text: digits, at: now };
 
-          if (!isValidEAN13(digits)) {
-            setScanStatus('Aproxime um EAN-13 valido...');
+          if (!isValidBarcode(digits)) {
+            setScanStatus('Aproxime um codigo valido...');
             return;
           }
 
@@ -262,7 +275,7 @@ export default function PosMobilePage() {
       );
 
       scanControlsRef.current = controls;
-      setScanStatus('Aponte para o codigo EAN-13');
+      setScanStatus('Aponte para o codigo de barras');
     } catch {
       setToast('Nao foi possivel abrir a camera');
       setScanOpen(false);
@@ -347,13 +360,15 @@ export default function PosMobilePage() {
     }
 
     try {
-      await createSale({
+      const sale = await createSale({
         cliente: cliente || undefined,
         items,
         total: totals.total,
         payments,
       });
 
+      setLastSale(sale);
+      setWhatsOpen(true);
       clearSale();
       setScreen('sale');
       setToast('Venda finalizada com sucesso');
@@ -361,6 +376,20 @@ export default function PosMobilePage() {
       setToast(error.message || 'Falha ao finalizar venda');
     }
   }, [items, totals.remaining, totals.total, payments, cliente, clearSale]);
+
+  const handleSendWhatsappReceipt = useCallback(async ({ phone }) => {
+    if (!lastSale?.id) return;
+    try {
+      await sendSaleWhatsappReceipt(lastSale.id, phone);
+      setToast('Comprovante enviado');
+      setWhatsPhone(phone);
+      try { localStorage.setItem('pos_whatsapp_phone', phone); } catch {}
+      setWhatsOpen(false);
+    } catch (error) {
+      setToast(error.message || 'Falha ao enviar comprovante');
+      throw error;
+    }
+  }, [lastSale]);
 
   return (
     <div className="tw-flex tw-h-full tw-min-h-0 tw-w-full tw-flex-1 tw-bg-bg tw-pb-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom))] md:tw-pb-0">
@@ -459,11 +488,19 @@ export default function PosMobilePage() {
           onConfirm={handleConfirmPayment}
         />
 
+        <WhatsappReceiptModal
+          open={whatsOpen}
+          saleId={lastSale?.id}
+          defaultPhone={whatsPhone}
+          onClose={() => setWhatsOpen(false)}
+          onSend={handleSendWhatsappReceipt}
+        />
+
         {scanOpen && (
           <div className="tw-absolute tw-inset-0 tw-z-30 tw-bg-black/80" onClick={() => setScanOpen(false)}>
             <div className="tw-absolute tw-bottom-0 tw-left-0 tw-right-0 tw-rounded-t-2xl tw-bg-surface tw-p-4" onClick={(event) => event.stopPropagation()}>
               <div className="tw-mb-3 tw-flex tw-items-center tw-justify-between">
-                <p className="tw-font-inter tw-text-base tw-font-semibold tw-text-text">Leitor EAN-13</p>
+                <p className="tw-font-inter tw-text-base tw-font-semibold tw-text-text">Leitor codigo de barras</p>
                 <button
                   type="button"
                   onClick={() => setScanOpen(false)}

@@ -21,6 +21,22 @@ const env = {
 
   AUTH_JWT_SECRET:  process.env.AUTH_JWT_SECRET  || 'change-me',
   AUTH_JWT_EXPIRES: process.env.AUTH_JWT_EXPIRES || '7d',
+
+  // Uazapi (WhatsApp)
+  UAZAPI_SUBDOMAIN: process.env.UAZAPI_SUBDOMAIN || '',
+  UAZAPI_BASE_URL:  process.env.UAZAPI_BASE_URL  || '',
+  UAZAPI_TOKEN:     process.env.UAZAPI_TOKEN     || '',
+  // Uazapi commonly uses a raw token in header `token: <value>`
+  UAZAPI_TOKEN_HEADER: process.env.UAZAPI_TOKEN_HEADER || 'token',
+  // e.g. 'Bearer ' (with trailing space). Use empty string to send raw token.
+  UAZAPI_TOKEN_PREFIX: process.env.UAZAPI_TOKEN_PREFIX || '',
+  // Path to send a text message (depends on your Uazapi setup)
+  UAZAPI_SEND_TEXT_PATH: process.env.UAZAPI_SEND_TEXT_PATH || '/send/text',
+  // Request body field names
+  UAZAPI_TO_FIELD:   process.env.UAZAPI_TO_FIELD   || 'number',
+  UAZAPI_TEXT_FIELD: process.env.UAZAPI_TEXT_FIELD || 'text',
+  // 'digits' => 55DDDN...  |  'e164' => +55DDDN...
+  UAZAPI_NUMBER_FORMAT: process.env.UAZAPI_NUMBER_FORMAT || 'digits',
 };
 
 module.exports = env;
